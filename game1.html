@@ -62,18 +62,19 @@
     </div>
 
     <script>
-        const QUESTIONS_CONFIG = [
-            { q: "1 這是哪？", options: ["台北市", "新北市", "桃園市", "台中市"], ansIndex: 1, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjg4YQS7liSulI1XhyUeiT_eKgwn_IfOdqNll-8DBTRvG3CvR517RcSbxewPym8uIlfRik-VTOikAhrU6YaSAA5XMkKtoEroZsvSNhWvljScP0_PiEGhzc6zgUh1r4Bdy47aD80Bt8jAoP-Gy09XJSUthjwoeHdx24gOrT73fAB4T3I1rzHkm8DXf6ZqjQ/s320/001Yonhe.jpg" },
-            { q: "2 這是哪？", options: ["阿里山", "太魯閣", "陽明山", "墾丁"], ansIndex: 1, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh10GXQX8SidLUfxUbsRqPpy8WbFFHyJFSM0JX33rjx0wIXwvPqY6qqjBzuEAqjkPCoab3XEcjqPOmjZDJTwh769C29YZqwzHZxycO1E0P1UTxy_ZVkrZxsBybsF4p7S5KxrnMeiXC4O-7RywRkzRf7-FZ4ZfNxRxIo-TZiDyu5jD1-CG2I_VMd4oggfp8/s800/002Hualian.jpg" },
-            { q: "3 這位於哪個縣市？", options: ["彰化", "台中", "苗栗", "台東"], ansIndex: 3, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi9B9ilGnY9AVvabkRmt3MmNSJmxIk0iGS9JUEkYytqZd2-Nh75byG_cWDwxIgdEmrUHWrdwY9_9XjB5Da_wCsfZEE5Tfreyh8jZxa8jk5f5Ec0IsDpNq6Q350newyKgl4XT19t9XhEe-IaP1uaZzjl8WFaQNH9hf0aFAd-93bqnredulrj2Zd3OtOPYT8/s320/003Taidon.jpg" },
-            { q: "4 哪個城市？", options: ["台南", "高雄", "屏東", "嘉義"], ansIndex: 0, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh4RtNz49ckYKw1KqJMVcxR5Ta7_wzW5vi1yRsbLw2lh7TEcxVjpc6L7rqLWZ8Z8EZtabzIr7NdEOKcfn7F6pF03BHEuz57cJXaPWaU9kmvdVNgfnj_vIF0GLCnG7ueqysb_CzwQY2ctrgW9RWFmgBj31Dmpbg6QuLnjGJd-FgbCk7rNuruDbJu1dg528Q/s1500/004Tainan.jpg" },
-            { q: "5 哪？", options: ["八里", "墾丁", "淡水", "南庄"], ansIndex: 2, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEit7GKm5QjaeMida8uYRLWNQojGC4zB3kv8kRrDAgKPrRfjSkSqlKEaXUUAxYupowsI8feTjpa9bcyK9engo6EbmvETjGibPRJ0l76cE0MKJRgrFam2c8Zb0tfFPM1RayK3HcgaefFchTpDWy4LiRqMO_3Vwke-kvNO1gnzXk7WLdnNzD0Ey2K2pbja-_4/s1024/005_danshu.jpg" },
-            { q: "6 哪裡？", options: ["台南市", "高雄", "宜蘭", "台北"], ansIndex: 1, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhc5FXcxyURw-ueQ6sWARHCkB6bxP5XR0YWhCsD8erbVKX1RPms0Y9GRnjMb9XdCbReclWTOgZoQo7sBAkKJryo605Mdf_5zHITi66IYlFE87Xf-krLe5661wKPZPiceDjjupcR5ShWyORM6JX-DviZXmQ_3odlvE4OT3Buc2DUksralbay6OUBabpK8b4/s798/006Kao.jpg" },
-            { q: "7 where？", options: ["台中", "新北", "高雄", "南投"], ansIndex: 0, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEicpVO7CUxjczvx4F7r8Quy0u0P7G7wBydz0zLviG9LjI_7nfDOYdQgdcPy5hqq0al9cQ5W3IxNtHXdh3bHeOgLyvHc6Rt_ehsoYmWg5Ils2jtG6XIZ4Yo1YjK_lIK54sYvKehs06-pu5b4a52cNqSgQssRdjWz_5R24EXUq3oa4GVltgWTOfh4A9ZllEE/s320/007Taizon.jpg" },
-            { q: "8 位於？", options: ["桃園", "淡水", "新竹", "苗栗"], ansIndex: 2, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiMSqP5a8y8IGUDKErtySdLuNpPKxDOoJNlTes2itI4meuJ1EWrVz4ILpkg3Q0HCzCp2HZgLIiviAEzBmKibaGHUeCAH8BTTwvgY5tahZ_DzT7hAYNtQuQZ7xrr5mCMg395qJWKgu0LO-44dbXXJHJO2zZWArMs8mnp9hFHKYNI1UCwzQxZ25E3hkg5ylc/s320/008shinzu_s.jpg" },
-            { q: "9 哪？", options: ["桃園", "雲林", "新北", "嘉義"], ansIndex: 0, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhXWclK-a8P8EFDC_Xfh9qIL1Qy-V2uYt73ePbQpewfQO8v5gyPVtXoFOIdKbLtOlVYo-wCwAoTyV730FALaSHpINogW3UdN5SWs-6XnhiU_YnO2xq00QMqri6OAaOxoc1Rnayt-eE_Egtduow5kT_8G-zCAJ4EfMtvXlBnPFbRc5hMOmEZtbiMGm6yNro/s320/009Dahi.jpg" },
-            { q: "10 哪裡？", options: ["金門", "南投", "花蓮", "綠島"], ansIndex: 2, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiomKr3EDtKX1LcyCOz55RMFw2MAQbYwsEbvtcZ3ESeAvuUKHPnS57A7idbRnoPiQ12QsPwtHTM4tjL-ea0S9SHeePNDpNng1tXrQM3y4itos2tENjmx8fq5yZYut94wWPSJHFBlbameKgkEOCMlRH1rQwO42cmnMLtNkDN443REsKAhSH4hxHjOJPywus/s320/010Liutan_s.jpg" }
-        ];
+       const QUESTIONS_CONFIG = [
+  { q: "1 這是哪？", options: ["台北市", "新北市", "桃園市", "台中市"], ansIndex: 1, img: "./img/001Yonhe.jpg" },
+  { q: "2 這是哪？", options: ["阿里山", "太魯閣", "陽明山", "墾丁"], ansIndex: 1, img: "./img/002Hualian.jpg" },
+  { q: "3 這位於哪個縣市？", options: ["彰化", "台中", "苗栗", "台東"], ansIndex: 3, img: "./img/003Taidon.jpg" },
+  { q: "4 哪個城市？", options: ["台南", "高雄", "屏東", "嘉義"], ansIndex: 0, img: "./img/004Tainan.jpg" },
+  { q: "5 哪？", options: ["八里", "墾丁", "淡水", "南庄"], ansIndex: 2, img: "./img/005_danshu.jpg" },
+  { q: "6 哪裡？", options: ["台南市", "高雄", "宜蘭", "台北"], ansIndex: 1, img: "./img/006Kao.jpg" },
+  { q: "7 where？", options: ["台中", "新北", "高雄", "南投"], ansIndex: 0, img: "./img/007Taizon.jpg" },
+  { q: "8 位於？", options: ["桃園", "淡水", "新竹", "苗栗"], ansIndex: 2, img: "./img/008shinzu_s.jpg" },
+  { q: "9 哪？", options: ["桃園", "雲林", "新北", "嘉義"], ansIndex: 0, img: "./img/009Dahi.jpg" },
+  { q: "10 哪裡？", options: ["金門", "南投", "花蓮", "綠島"], ansIndex: 2, img: "./img/010Liutan_s.jpg" }
+];
+
 
         let currentIdx = 0;
         let score = 0;
