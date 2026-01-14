@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台灣街景大挑戰 - 進階管理版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; overflow-x: hidden; }
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .streetview-container { aspect-ratio: 16 / 9; background: #020617; border-radius: 1rem; overflow: hidden; position: relative; }
+        .streetview-img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.5s ease; }
+        .timer-bar { transition: width 1s linear; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+        .wrong-shake { animation: shake 0.4s ease-in-out; }
+    </style>
+</head>
+<body class="p-4">
+
+    <div id="start-screen" class="text-center glass-panel p-10 rounded-3xl max-w-lg w-full shadow-2xl">
+        <h1 class="text-4xl font-black mb-2 text-yellow-500 italic">台灣街景大挑戰</h1>
+        <p class="mb-6 text-slate-400">挑戰你的地理直覺！共有 10 道專屬街景題。</p>
+        <div class="mb-8 p-4 bg-slate-800/50 rounded-2xl border border-slate-700">
+            <span class="text-slate-500 text-xs font-bold uppercase tracking-widest block mb-1">Highest Score</span>
+            <div id="best-score-display" class="text-3xl font-black text-white">0</div>
+        </div>
+        <button onclick="startGame()" class="w-full bg-yellow-500 text-slate-900 px-8 py-4 rounded-xl font-black text-xl hover:bg-yellow-400 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-yellow-500/20">開始遊戲</button>
+    </div>
+
+    <div id="game-screen" class="hidden w-full max-w-4xl">
+        <div class="mb-4 flex justify-between items-end">
+            <div>
+                <span class="text-slate-500 text-xs font-bold uppercase">Progress</span>
+                <div class="text-2xl font-black text-white"><span id="current-q">1</span> / <span id="total-q">10</span></div>
+            </div>
+            <div class="text-right">
+                <span class="text-slate-500 text-xs font-bold uppercase">Score</span>
+                <div id="score-display" class="text-3xl font-black text-yellow-500">0</div>
+            </div>
+        </div>
+        
+        <div id="timer-container" class="w-full bg-slate-800 h-2 rounded-full mb-6 overflow-hidden">
+            <div id="timer-bar" class="timer-bar h-full bg-yellow-500" style="width: 100%"></div>
+        </div>
+
+        <div id="view-container" class="streetview-container mb-6 shadow-2xl border border-slate-700">
+            <img id="street-img" src="" class="streetview-img opacity-0">
+            <div id="loader" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900">
+                <div class="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            </div>
+            <div id="fallback-clue" class="absolute inset-0 hidden flex flex-col items-center justify-center bg-slate-800/90 p-8 text-center backdrop-blur-sm">
+                <p class="text-yellow-500 text-xl font-bold mb-2">觀察景點特徵</p>
+                <p id="clue-text" class="text-slate-200 text-lg italic"></p>
+            </div>
+        </div>
+
+        <div id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </div>
+
+    <div id="result-screen" class="hidden w-full max-w-lg glass-panel p-10 rounded-3xl text-center shadow-2xl border-2 border-yellow-500/30">
+        <h2 class="text-2xl font-bold text-slate-400 mb-2 uppercase tracking-tighter">Test Completed</h2>
+        <div id="final-score" class="text-8xl font-black text-yellow-500 mb-4 drop-shadow-lg">0</div>
+        <div id="new-record-tag" class="hidden text-green-400 font-black text-xl mb-8 animate-bounce">✨ NEW RECORD! ✨</div>
+        <button onclick="location.reload()" class="w-full bg-white text-slate-900 px-8 py-4 rounded-xl font-black text-lg hover:bg-slate-200 transition-all shadow-xl">重新挑戰</button>
+    </div>
+
+    <script>
+        // 可用的備援圖片，避免外部連結失效時無法預覽
+        const FALLBACK_IMG = "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80";
+
+        const QUESTIONS_CONFIG = [
+            { q: "1 這是哪？", options: ["台北市", "新北市", "桃園市", "台中市"], ansIndex: 1, img: "https://lh3.googleusercontent.com/sitesv/AAzXCkeyxs_cXu_ge2BHa9vg5U2HELPNAbVNWfuxh9umOwesUDPeQ_PbJQIgRigft5f4Ykmyq0s3LRVpmF_IxFzjjahJ8m6-RehBKULCX0En3WYBLETtrf98GD9eoc9pe9Kjp3emBuBDoVhyvv8IlLKzOadgcqq9KwU3ITgDZb6YdWKJzNsXJx1TcgDihkfaV302ihN2FBaoa43-3hG0GbYQTNvOg1pmRarSO-5krbg=w1280" },
+            { q: "2 這是哪？", options: ["阿里山", "太魯閣", "陽明山", "墾丁"], ansIndex: 1, img: "https://lh3.googleusercontent.com/sitesv/AAzXCkejkUYWVe2K4KGZ2XAekqwKk1xtqwLqYqGaZTd_YuvUznQ-Iie3GOctG_2OJIm_2PBDk1__TG9Qwe5O-zMpzcrmy8gf6o6vToFi-tnZsGCFHI-OA6c-_8h5nrVoqIKgirRJZw8SaKWREABtJRTPbURTR0bF-3MkT2Cref_oU1IOlm2MHrSVInXGg789tRrmKFpjcvasHtsHYaykVItctaGaVlZ-Ig26GaIP=w1280" },
+            { q: "3 這位於哪個縣市？", options: ["彰化", "台中", "苗栗", "台東"], ansIndex: 3, img: "https://lh3.googleusercontent.com/sitesv/AAzXCkcu6tRTl5hEeS0Bf5Md8Qz5dYw-i9IMML2m-Scf-_E3IDGq78JurYJDnXLc8fVtWvdPM4orkAhLVZghUPvDF4EVBoKpincWxVNF6ewWXrdKxrms5pnD5bJZH-giN_UpBftWcHp2BTlxXfMXPQ2-CJMGz-6r_4ckHxQWHEfyQAwYhY1sC44Kesr7dLo13JSXDqbO38dD7IsEuVzGa6yDtBLBz0oJ7SIqvj3asbg=w1280" },
+            { q: "4 哪個城市？", options: ["台南", "高雄", "屏東", "嘉義"], ansIndex: 0, img: "https://lh3.googleusercontent.com/sitesv/AAzXCkfXonod0tn3RSDBNM9pk8hl4Zh0tNsTa-60Ksu67x8RcLDc0K3L8PP9hAcv8leEC5bFxLfpdE_1keeDIc7fUwXEo7nGBya7KiWdnn2P3xTvD-y1GP9WKeRPKEe3DzLxT96IIjkeexI4q2THDpkORW6R3xe1uOUm6-9Lq621vPc5cGJZUJwooKwfbBnaFHUhtKw5klGgX8pUnTxwEJIfYQC1hjBy0dDCTU0riBg=w1280" },
+            { q: "5 哪？", options: ["八里", "墾丁", "淡水", "南庄"], ansIndex: 2, img: "https://lh3.googleusercontent.com/sitesv/AAzXCkcd7Yacz8HZ3XER5dgPHHGKeSv0oziMTNO3G7Y-s_tiNCgLRliKmNBCIjtDqfoOS4gp9pCUVdbVS1JEO20i7_88EFJL3jvNPKQGnPp5fnMy8vHXDNAeFNZkXwNb7npZSmkRCNDl4tzLzmEvluUGRNLZjSzodcAV1NbmI7kb5GdAbQ1RAmDoyzF7y3L31Mg-W7W_P2CelG_UhqrS01NcAc8BfAbFt6V3Eg6oMrc=w1280" },
+            { q: "6 哪裡？", options: ["台南市", "高雄", "宜蘭", "台北"], ansIndex: 1, img: "https://lh3.googleusercontent.com/sitesv/AAzXCkcYCu6kTTfWdyXLHO102V6XQNrlfMo2s5oim-hpNFA4d-JjeIpTDcv9Qu6h0y8MMZpQs8ovuP8qHkJpbp-lYP2dp6VB4PY-SMuk5-hkqYvz-cRjZFls2Db5gC4qcR5L29MQRO6M2Y8GqIXVySximZ1PY79WRdQiLMtXQpWzfRDHWzMj_jcrRAxklAVHAwheMECJRirHFcVzJYXf_WKL69fJZ9-QC-fqVnuwMyI=w1280" },
+            { q: "7 where？", options: ["台中", "新北", "高雄", "南投"], ansIndex: 1, img: "https://lh3.googleusercontent.com/sitesv/AAzXCkedchquSrp8KEiM7XlyE7bfV6S4zNd2HMdQxnkr70hbLNPVB0h9Bz2f4LT_m0KcoupIVwpKTjThmMoOqMMHqSYn6GdbSotfzY3CwIZKl0hqHu1PQEHVpWwhPEFtRFi7Lq8mQ_wCz2Mnc3M_ni0BHC-D1GetdeS16VRe10rOTA5ujG8aL-WagK8y6gEMPz3Dx0mKFJ1TGTmx_x7MkABJmzaDySDosgqTobe2CYE=w1280" },
+            { q: "8 位於？", options: ["桃園", "淡水", "新竹", "苗栗"], ansIndex: 2, img: "https://lh3.googleusercontent.com/sitesv/AAzXCkfBkpI41jPZ4d3aUt430uiTfVeHQZBx9hwJAtv-7rrN2hSstTGAhgjH7bjGdIuompAP2xHfEFCChg4rGnZjUGqgdX2onPhfvfhHrLOl-pULGkJVLCqJevGnPSL0-2GeVu0QZGWxUh9WG-sMOY5oMj5zTkRAVdgTRKBL8cgG6XeXbWh1BdhwPTF5vPmF5O017dAUwyUHzMXIlhtT6KSjP5GvOzCW1x6hHHsn-6E=w1280" },
+            { q: "9 哪？", options: ["桃園", "雲林", "新北", "嘉義"], ansIndex: 1, img: "https://lh3.googleusercontent.com/sitesv/AAzXCkdn08vfGhszXpDweP63n_JJxwwnHhzaLdLLME5RrfVA4dUHMpLIiUNMdvcv7NNSAbn6PBlhasw95z3gjyb6aZxDeUYEn9_TkuiTPlr5wkMhD7bV5ExdOOcBv_V0Hk-DDEGTuPeo3BfAPZ2rb1lyLM_Q9KenHRjpSjdU78fPlIOzUYBt5w9b49VrjQO3vHrOsUuyiELuxDbzXui1FbAJlDWiMlyFI2uAkQjv2_o=w1280" },
+            { q: "10 哪裡？", options: ["金門", "南投", "花蓮", "綠島"], ansIndex: 2, img: "https://lh3.googleusercontent.com/sitesv/AAzXCkfm-1T7cSoYaAQR34zF0sYa4a6vRHHaH0fEF3vHG8ja6QW-1NO9I3cll5WkXQA8rY6XcRLz1-KEydhiPjb1aBSLqD_ee9h9nst6z-QnHdsHfqOYE4wOmQtM3fAHK5pvTPmnMs5ZyKB-z05uhr4BofzcTnUzFX5Wx1WIWiiHHqurxMl-VrVPzz8Pg1DAdk_bZ4B8a0RT4YUuQp5YMQSMKb62rjg2PCFbqzQz=w1280" }
+        ];
+
+        let currentIdx = 0;
+        let score = 0;
+        let timer;
+        let timeLeft = 10;
+        let canAnswer = true;
+        let highScore = localStorage.getItem('tw-streetview-highscore') || 0;
+
+        // 初始化顯示最高分
+        document.getElementById('best-score-display').innerText = highScore;
+
+        function startGame() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('total-q').innerText = QUESTIONS_CONFIG.length;
+            loadQuestion();
+        }
+
+        async function loadQuestion() {
+            if (currentIdx >= QUESTIONS_CONFIG.length) {
+                showResults();
+                return;
+            }
+
+            canAnswer = true;
+            timeLeft = 10;
+            document.getElementById('current-q').innerText = currentIdx + 1;
+            
+            const streetImg = document.getElementById('street-img');
+            const loader = document.getElementById('loader');
+            const fallbackClue = document.getElementById('fallback-clue');
+            const timerBar = document.getElementById('timer-bar');
+
+            // --- 關鍵修復：重置所有狀態與監聽器 ---
+            streetImg.onload = null;
+            streetImg.onerror = null;
+            streetImg.src = ""; // 先清空，避免舊圖殘留
+            streetImg.crossOrigin = "anonymous";
+            streetImg.classList.add('opacity-0');
+            
+            loader.classList.remove('hidden');
+            fallbackClue.classList.add('hidden');
+            timerBar.style.width = "100%";
+            
+            const qData = QUESTIONS_CONFIG[currentIdx];
+            let triedFallback = false;
+            
+            // 設定新的監聽器
+            const setImage = (url) => { streetImg.src = url; };
+            streetImg.onload = () => {
+                loader.classList.add('hidden');
+                streetImg.classList.remove('opacity-0');
+            };
+            streetImg.onerror = () => {
+                if (!triedFallback && qData.img !== FALLBACK_IMG) {
+                    triedFallback = true;
+                    setImage(FALLBACK_IMG);
+                    return;
+                }
+                loader.classList.add('hidden');
+                fallbackClue.classList.remove('hidden');
+                document.getElementById('clue-text').innerText = qData.q;
+            };
+
+            // 觸發載入
+            setImage(qData.img);
+
+            // 選項生成
+            const grid = document.getElementById('options-grid');
+            grid.innerHTML = '';
+            const originalAns = qData.options[qData.ansIndex];
+            
+            [...qData.options].sort(() => Math.random() - 0.5).forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "bg-slate-800 p-4 rounded-xl border border-slate-700 hover:border-yellow-500 hover:bg-slate-700 transition-all text-left font-bold text-slate-200";
+                btn.innerText = opt;
+                btn.onclick = () => handleAnswer(opt, originalAns, btn);
+                grid.appendChild(btn);
+            });
+
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer-bar').style.width = (timeLeft * 10) + "%";
+                if (timeLeft <= 0) handleAnswer(null, QUESTIONS_CONFIG[currentIdx].options[QUESTIONS_CONFIG[currentIdx].ansIndex]);
+            }, 1000);
+        }
+
+        function handleAnswer(selected, correctAnswer, btn) {
+            if (!canAnswer) return;
+            canAnswer = false;
+            clearInterval(timer);
+
+            const isCorrect = selected === correctAnswer;
+
+            if (isCorrect) {
+                score += (10 + timeLeft);
+                document.getElementById('score-display').innerText = score;
+                if (btn) btn.classList.add('bg-green-600', 'border-green-400', '!text-white');
+            } else {
+                document.getElementById('view-container').classList.add('wrong-shake');
+                if (btn) btn.classList.add('bg-red-600', 'border-red-400', '!text-white');
+                Array.from(document.getElementById('options-grid').children).forEach(b => {
+                    if (b.innerText === correctAnswer) b.classList.add('border-green-500', 'text-green-500', 'border-2');
+                });
+            }
+
+            setTimeout(() => {
+                document.getElementById('view-container').classList.remove('wrong-shake');
+                currentIdx++;
+                loadQuestion();
+            }, 1500);
+        }
+
+        function showResults() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = score;
+
+            if (score > highScore) {
+                localStorage.setItem('tw-streetview-highscore', score);
+                document.getElementById('new-record-tag').classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>

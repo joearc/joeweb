@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台灣街景大挑戰</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; overflow-x: hidden; }
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .streetview-container { aspect-ratio: 16 / 9; background: #020617; border-radius: 1rem; overflow: hidden; position: relative; }
+        .streetview-img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.5s ease; }
+        .timer-bar { transition: width 1s linear; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+        .wrong-shake { animation: shake 0.4s ease-in-out; }
+    </style>
+</head>
+<body class="p-4">
+
+    <div id="start-screen" class="text-center glass-panel p-10 rounded-3xl max-w-lg w-full shadow-2xl">
+        <h1 class="text-4xl font-black mb-2 text-yellow-500 italic">台灣街景大挑戰</h1>
+        <p class="mb-10 text-slate-400">挑戰你的地理直覺！每題 10 分，滿分 100。</p>
+        <button onclick="startGame()" class="w-full bg-yellow-500 text-slate-900 px-8 py-4 rounded-xl font-black text-xl hover:bg-yellow-400 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-yellow-500/20">開始遊戲</button>
+    </div>
+
+    <div id="game-screen" class="hidden w-full max-w-4xl">
+        <div class="mb-4 flex justify-between items-end">
+            <div>
+                <span class="text-slate-500 text-xs font-bold uppercase">Progress</span>
+                <div class="text-2xl font-black text-white"><span id="current-q">1</span> / 10</div>
+            </div>
+            <div class="text-right">
+                <span class="text-slate-500 text-xs font-bold uppercase">Score</span>
+                <div id="score-display" class="text-3xl font-black text-yellow-500">0</div>
+            </div>
+        </div>
+        
+        <div id="timer-container" class="w-full bg-slate-800 h-2 rounded-full mb-6 overflow-hidden">
+            <div id="timer-bar" class="timer-bar h-full bg-yellow-500" style="width: 100%"></div>
+        </div>
+
+        <div id="view-container" class="streetview-container mb-6 shadow-2xl border border-slate-700">
+            <img id="street-img" src="" class="streetview-img opacity-0">
+            <div id="loader" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900">
+                <div class="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            </div>
+            <div id="fallback-clue" class="absolute inset-0 hidden flex flex-col items-center justify-center bg-slate-800/90 p-8 text-center backdrop-blur-sm">
+                <p class="text-yellow-500 text-xl font-bold mb-2">觀察景點特徵</p>
+                <p id="clue-text" class="text-slate-200 text-lg italic"></p>
+            </div>
+        </div>
+
+        <div id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </div>
+
+    <div id="result-screen" class="hidden w-full max-w-lg glass-panel p-10 rounded-3xl text-center shadow-2xl border-2 border-yellow-500/30">
+        <h2 class="text-2xl font-bold text-slate-400 mb-2 uppercase tracking-tighter">Test Completed</h2>
+        <p class="text-slate-400">Your Final Score</p>
+        <div id="final-score" class="text-8xl font-black text-yellow-500 mb-10 drop-shadow-lg">0</div>
+        <button onclick="location.reload()" class="w-full bg-white text-slate-900 px-8 py-4 rounded-xl font-black text-lg hover:bg-slate-200 transition-all shadow-xl">重新挑戰</button>
+    </div>
+
+    <script>
+        const QUESTIONS_CONFIG = [
+            { q: "1 這是哪？", options: ["台北市", "新北市", "桃園市", "台中市"], ansIndex: 1, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjg4YQS7liSulI1XhyUeiT_eKgwn_IfOdqNll-8DBTRvG3CvR517RcSbxewPym8uIlfRik-VTOikAhrU6YaSAA5XMkKtoEroZsvSNhWvljScP0_PiEGhzc6zgUh1r4Bdy47aD80Bt8jAoP-Gy09XJSUthjwoeHdx24gOrT73fAB4T3I1rzHkm8DXf6ZqjQ/s320/001Yonhe.jpg" },
+            { q: "2 這是哪？", options: ["阿里山", "太魯閣", "陽明山", "墾丁"], ansIndex: 1, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh10GXQX8SidLUfxUbsRqPpy8WbFFHyJFSM0JX33rjx0wIXwvPqY6qqjBzuEAqjkPCoab3XEcjqPOmjZDJTwh769C29YZqwzHZxycO1E0P1UTxy_ZVkrZxsBybsF4p7S5KxrnMeiXC4O-7RywRkzRf7-FZ4ZfNxRxIo-TZiDyu5jD1-CG2I_VMd4oggfp8/s800/002Hualian.jpg" },
+            { q: "3 這位於哪個縣市？", options: ["彰化", "台中", "苗栗", "台東"], ansIndex: 3, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi9B9ilGnY9AVvabkRmt3MmNSJmxIk0iGS9JUEkYytqZd2-Nh75byG_cWDwxIgdEmrUHWrdwY9_9XjB5Da_wCsfZEE5Tfreyh8jZxa8jk5f5Ec0IsDpNq6Q350newyKgl4XT19t9XhEe-IaP1uaZzjl8WFaQNH9hf0aFAd-93bqnredulrj2Zd3OtOPYT8/s320/003Taidon.jpg" },
+            { q: "4 哪個城市？", options: ["台南", "高雄", "屏東", "嘉義"], ansIndex: 0, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh4RtNz49ckYKw1KqJMVcxR5Ta7_wzW5vi1yRsbLw2lh7TEcxVjpc6L7rqLWZ8Z8EZtabzIr7NdEOKcfn7F6pF03BHEuz57cJXaPWaU9kmvdVNgfnj_vIF0GLCnG7ueqysb_CzwQY2ctrgW9RWFmgBj31Dmpbg6QuLnjGJd-FgbCk7rNuruDbJu1dg528Q/s1500/004Tainan.jpg" },
+            { q: "5 哪？", options: ["八里", "墾丁", "淡水", "南庄"], ansIndex: 2, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEit7GKm5QjaeMida8uYRLWNQojGC4zB3kv8kRrDAgKPrRfjSkSqlKEaXUUAxYupowsI8feTjpa9bcyK9engo6EbmvETjGibPRJ0l76cE0MKJRgrFam2c8Zb0tfFPM1RayK3HcgaefFchTpDWy4LiRqMO_3Vwke-kvNO1gnzXk7WLdnNzD0Ey2K2pbja-_4/s1024/005_danshu.jpg" },
+            { q: "6 哪裡？", options: ["台南市", "高雄", "宜蘭", "台北"], ansIndex: 1, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhc5FXcxyURw-ueQ6sWARHCkB6bxP5XR0YWhCsD8erbVKX1RPms0Y9GRnjMb9XdCbReclWTOgZoQo7sBAkKJryo605Mdf_5zHITi66IYlFE87Xf-krLe5661wKPZPiceDjjupcR5ShWyORM6JX-DviZXmQ_3odlvE4OT3Buc2DUksralbay6OUBabpK8b4/s798/006Kao.jpg" },
+            { q: "7 where？", options: ["台中", "新北", "高雄", "南投"], ansIndex: 0, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEicpVO7CUxjczvx4F7r8Quy0u0P7G7wBydz0zLviG9LjI_7nfDOYdQgdcPy5hqq0al9cQ5W3IxNtHXdh3bHeOgLyvHc6Rt_ehsoYmWg5Ils2jtG6XIZ4Yo1YjK_lIK54sYvKehs06-pu5b4a52cNqSgQssRdjWz_5R24EXUq3oa4GVltgWTOfh4A9ZllEE/s320/007Taizon.jpg" },
+            { q: "8 位於？", options: ["桃園", "淡水", "新竹", "苗栗"], ansIndex: 2, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiMSqP5a8y8IGUDKErtySdLuNpPKxDOoJNlTes2itI4meuJ1EWrVz4ILpkg3Q0HCzCp2HZgLIiviAEzBmKibaGHUeCAH8BTTwvgY5tahZ_DzT7hAYNtQuQZ7xrr5mCMg395qJWKgu0LO-44dbXXJHJO2zZWArMs8mnp9hFHKYNI1UCwzQxZ25E3hkg5ylc/s320/008shinzu_s.jpg" },
+            { q: "9 哪？", options: ["桃園", "雲林", "新北", "嘉義"], ansIndex: 0, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhXWclK-a8P8EFDC_Xfh9qIL1Qy-V2uYt73ePbQpewfQO8v5gyPVtXoFOIdKbLtOlVYo-wCwAoTyV730FALaSHpINogW3UdN5SWs-6XnhiU_YnO2xq00QMqri6OAaOxoc1Rnayt-eE_Egtduow5kT_8G-zCAJ4EfMtvXlBnPFbRc5hMOmEZtbiMGm6yNro/s320/009Dahi.jpg" },
+            { q: "10 哪裡？", options: ["金門", "南投", "花蓮", "綠島"], ansIndex: 2, img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiomKr3EDtKX1LcyCOz55RMFw2MAQbYwsEbvtcZ3ESeAvuUKHPnS57A7idbRnoPiQ12QsPwtHTM4tjL-ea0S9SHeePNDpNng1tXrQM3y4itos2tENjmx8fq5yZYut94wWPSJHFBlbameKgkEOCMlRH1rQwO42cmnMLtNkDN443REsKAhSH4hxHjOJPywus/s320/010Liutan_s.jpg" }
+        ];
+
+        let currentIdx = 0;
+        let score = 0;
+        let timer;
+        let timeLeft = 10;
+        let canAnswer = true;
+
+        function startGame() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        async function loadQuestion() {
+            if (currentIdx >= QUESTIONS_CONFIG.length) {
+                showResults();
+                return;
+            }
+
+            canAnswer = true;
+            timeLeft = 10;
+            document.getElementById('current-q').innerText = currentIdx + 1;
+            
+            const streetImg = document.getElementById('street-img');
+            const loader = document.getElementById('loader');
+            const fallbackClue = document.getElementById('fallback-clue');
+            const timerBar = document.getElementById('timer-bar');
+
+            streetImg.onload = null;
+            streetImg.onerror = null;
+            streetImg.src = ""; 
+            streetImg.classList.add('opacity-0');
+            
+            loader.classList.remove('hidden');
+            fallbackClue.classList.add('hidden');
+            timerBar.style.width = "100%";
+            
+            const qData = QUESTIONS_CONFIG[currentIdx];
+            
+            streetImg.onload = () => {
+                loader.classList.add('hidden');
+                streetImg.classList.remove('opacity-0');
+            };
+            streetImg.onerror = () => {
+                loader.classList.add('hidden');
+                fallbackClue.classList.remove('hidden');
+                document.getElementById('clue-text').innerText = qData.q;
+            };
+
+            streetImg.src = qData.img;
+
+            const grid = document.getElementById('options-grid');
+            grid.innerHTML = '';
+            const originalAns = qData.options[qData.ansIndex];
+            
+            [...qData.options].sort(() => Math.random() - 0.5).forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "bg-slate-800 p-4 rounded-xl border border-slate-700 hover:border-yellow-500 hover:bg-slate-700 transition-all text-left font-bold text-slate-200";
+                btn.innerText = opt;
+                btn.onclick = () => handleAnswer(opt, originalAns, btn);
+                grid.appendChild(btn);
+            });
+
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer-bar').style.width = (timeLeft * 10) + "%";
+                if (timeLeft <= 0) handleAnswer(null, QUESTIONS_CONFIG[currentIdx].options[QUESTIONS_CONFIG[currentIdx].ansIndex]);
+            }, 1000);
+        }
+
+        function handleAnswer(selected, correctAnswer, btn) {
+            if (!canAnswer) return;
+            canAnswer = false;
+            clearInterval(timer);
+
+            const isCorrect = selected === correctAnswer;
+
+            if (isCorrect) {
+                score += 10;
+                document.getElementById('score-display').innerText = score;
+                if (btn) btn.classList.add('bg-green-600', 'border-green-400', '!text-white');
+            } else {
+                document.getElementById('view-container').classList.add('wrong-shake');
+                if (btn) btn.classList.add('bg-red-600', 'border-red-400', '!text-white');
+                Array.from(document.getElementById('options-grid').children).forEach(b => {
+                    if (b.innerText === correctAnswer) b.classList.add('border-green-500', 'text-green-500', 'border-2');
+                });
+            }
+
+            setTimeout(() => {
+                document.getElementById('view-container').classList.remove('wrong-shake');
+                currentIdx++;
+                loadQuestion();
+            }, 1500);
+        }
+
+        function showResults() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = score;
+        }
+    </script>
+</body>
+</html>
