@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>關於 - Joe's ArtLab</title>
+  <style>
+    /* 極簡大地色樣式重置與基礎設定 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+    :root {
+      --earth-100: #f9f5f0; /* 淺米色 */
+      --earth-200: #e8ded1; /* 淺卡其 */
+      --earth-300: #d4bfa8; /* 淺棕 */
+      --earth-600: #8b6e4e; /* 深棕 */
+      --earth-800: #5c4833; /* 暗棕 */
+      --shadow: 0 2px 8px rgba(0,0,0,0.1);
+      --transition: all 0.3s ease;
+    }
+    body {
+      background-color: var(--earth-100);
+      color: var(--earth-800);
+      line-height: 1.6;
+      padding: 0;
+      margin: 0;
+    }
+    /* 全域導覽列 */
+    .global-nav {
+      background-color: var(--earth-100);
+      border-bottom: 1px solid var(--earth-200);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow);
+    }
+    .global-nav ul {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .global-nav a {
+      color: var(--earth-600);
+      text-decoration: none;
+      font-weight: 500;
+      padding: 0.5rem 0;
+      border-bottom: 2px solid transparent;
+      transition: var(--transition);
+    }
+    .global-nav a:hover {
+      color: var(--earth-800);
+      border-bottom: 2px solid var(--earth-300);
+    }
+    .global-nav a.active {
+      color: var(--earth-800);
+      border-bottom: 2px solid var(--earth-600);
+    }
+    /* 內容區樣式 */
+    main {
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+    }
+    .card {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+      border: 1px solid var(--earth-200);
+    }
+    h1 {
+      color: var(--earth-800);
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    h2 {
+      color: var(--earth-600);
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    p {
+      margin-bottom: 1rem;
+    }
+    a {
+      color: var(--earth-600);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    a:hover {
+      color: var(--earth-800);
+      text-decoration: underline;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- 全域導覽列 -->
+  <nav class="global-nav">
+    <ul>
+      <li><a href="./index.html">首頁</a></li>
+      <li><a href="./about.html" class="active">關於</a></li>
+      <li><a href="./game1.html">小遊戲猜地名</a></li>
+      <li><a href="./game_color.html">明暗色彩分析</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="card">
+      <h1>關於 Joe's ArtLab</h1>
+      <p>Joe's ArtLab 是一個結合藝術與科技的創作實驗空間，專注於互動式設計、視覺藝術與數位創作的探索。</p>
+      <p>我們透過簡約的設計語言與大地色系的視覺風格，創造舒適且直觀的使用者體驗，同時保留作品的藝術性與實驗性。</p>
+      <h2>創作理念</h2>
+      <p>融合傳統藝術與現代數位技術，探索色彩、空間與互動的可能性，讓藝術不再只是靜態展示，而是能與觀眾產生連結的體驗。</p>
+    </div>
+  </main>
+</body>
+</html>
