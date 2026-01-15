@@ -123,14 +123,14 @@
 </head>
 <body class="p-4">
     <!-- 全域導覽列 -->
-    <nav class="global-nav w-full mb-6">
-        <ul>
-            <li><a href="./index.html">首頁</a></li>
-            <li><a href="./about.html">關於</a></li>
-            <li><a href="./game1.html" class="active">小遊戲猜地名</a></li>
-            <li><a href="./game_color.html">明暗色彩分析</a></li>
-        </ul>
-    </nav>
+<div id="nav"></div>
+
+<script>
+  fetch("./nav.html")
+    .then(r => r.text())
+    .then(html => document.getElementById("nav").innerHTML = html);
+</script>
+
 
     <div id="start-screen" class="text-center glass-panel p-10 rounded-3xl max-w-lg w-full">
         <h1 class="text-4xl font-black mb-2 text-primary italic">台灣街景大挑戰</h1>
