@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>菜單</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Inter',sans-serif;
+  background:linear-gradient(135deg,#f0fdf4,#f0f9ff,#fef3c7);
+  padding:1.5rem;
+  color:#1f2937;
+}
+.container{max-width:1200px;margin:auto}
+
+/* Header */
+.hero{
+  background:linear-gradient(90deg,#10b981,#0ea5e9,#f97316);
+  color:#fff;
+  border-radius:1rem;
+  padding:2.5rem 1.5rem;
+  text-align:center;
+  margin-bottom:2rem;
+}
+.hero h1{
+  font-family:'Poppins',sans-serif;
+  font-size:2.5rem;
+}
+.hero p{opacity:.95}
+
+/* Day selector */
+.day-buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.5rem;
+  margin-bottom:1.5rem;
+}
+.day-button{
+  padding:.5rem 1rem;
+  border-radius:.5rem;
+  border:2px solid #d1d5db;
+  background:#fff;
+  cursor:pointer;
+}
+.day-button.active{
+  background:#10b981;
+  color:#fff;
+  border-color:#10b981;
+}
+
+/* Cards */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:1.2rem;
+}
+.card{
+  background:#fff;
+  border-radius:1rem;
+  padding:1.2rem;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+.card h3{
+  font-family:'Poppins',sans-serif;
+  margin-bottom:.5rem;
+}
+.breakfast{border-top:4px solid #f97316}
+.lunch{border-top:4px solid #10b981}
+.dinner{border-top:4px solid #8b5cf6}
+
+ul{list-style:none}
+li{padding:.3rem 0}
+
+/* Supplements */
+.supplement-card{
+  background:#fff7ed;
+  border-left:5px solid #f97316;
+}
+.safe{color:#16a34a;font-weight:600}
+.caution{color:#dc2626;font-weight:700}
+
+/* Footer tips */
+.tips{
+  background:#eff6ff;
+  border-left:4px solid #0ea5e9;
+  border-radius:1rem;
+  padding:1rem;
+  margin-top:2rem;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+
+
+<div class="day-buttons" id="dayButtons"></div>
+
+<div class="grid" id="content"></div>
+
+<div class="tips">
+  <strong>💡 重點提醒</strong>
+  <ul>
+    <li>• 每天水量 ≥ 2000 ml</li>
+    <li>• 晚餐少澱粉，不是不吃</li>
+    <li>• 補充品請依時間分開吃</li>
+  </ul>
+</div>
+
+</div>
+
+<script>
+const menus=[
+{
+day:"Day 1",
+b:["雞胸肉","花椰菜 半顆","黑咖啡","蘋果 1/2"],
+l:["喜相逢魚 ×4","花椰菜 半顆","白飯 1 碗","木瓜 1/4"],
+d:["秋刀魚","煎蛋","高麗菜 半顆","地瓜 1/2（無白飯）"]
+},
+{
+day:"Day 2",
+b:["雞胸肉","花椰菜 半顆","黑咖啡","蘋果 1/2"],
+l:["喜相逢魚 ×4","花椰菜 半顆","白飯 1 碗","木瓜 1/4"],
+d:["鯖魚 1/2","煎蛋","高麗菜 半顆","❌ 無澱粉"]
+},
+{
+day:"Day 3",
+b:["雞胸肉","花椰菜 半顆","黑咖啡","蘋果 1/2"],
+l:["喜相逢魚 ×4","花椰菜 半顆","白飯 1 碗","木瓜 1/4"],
+d:["鱸魚 1/2","煎蛋","高麗菜 半顆","白飯 1/3"]
+},
+{
+day:"Day 4",
+b:["雞胸肉","花椰菜 半顆","黑咖啡","蘋果 1/2"],
+l:["喜相逢魚 ×4","花椰菜 半顆","白飯 1 碗","木瓜 1/4"],
+d:["秋刀魚","煎蛋","高麗菜 半顆","❌ 無澱粉"]
+},
+{
+day:"Day 5",
+b:["雞胸肉","花椰菜 半顆","黑咖啡","蘋果 1/2"],
+l:["喜相逢魚 ×4","花椰菜 半顆","白飯 1 碗","木瓜 1/4"],
+d:["鯖魚 1/2","煎蛋","高麗菜 半顆","地瓜 1/2"]
+},
+{
+day:"Day 6",
+b:["雞胸肉","花椰菜 半顆","黑咖啡","蘋果 1/2"],
+l:["喜相逢魚 ×4","花椰菜 半顆","白飯 1 碗","木瓜 1/4"],
+d:["鱸魚 1/2","煎蛋","高麗菜 半顆","白飯 1/3"]
+},
+{
+day:"Day 7",
+b:["雞胸肉","花椰菜 半顆","黑咖啡","蘋果 1/2"],
+l:["喜相逢魚 ×4","花椰菜 半顆","白飯 1 碗","木瓜 1/4"],
+d:["秋刀魚","煎蛋","高麗菜 半顆","❌ 無澱粉"]
+}
+];
+
+function card(title,cls,items){
+return `
+<div class="card ${cls}">
+<h3>${title}</h3>
+<ul>${items.map(i=>`<li>• ${i}</li>`).join("")}</ul>
+</div>`;
+}
+
+function supplements(){
+return `
+<div class="card supplement-card">
+<h3>💊 每日補充品（安穩友善）</h3>
+<ul>
+<li>• 維生素 D3（早餐後）<span class="safe">✔ 安全</span></li>
+<li>• B 群（早餐後）<span class="safe">✔ 代謝</span></li>
+<li>• 魚油 EPA+DHA ≥1000mg（午餐後）<span class="safe">✔ 心血管</span></li>
+<li>• 鎂 200–400mg（晚餐後 / 睡前）<span class="safe">✔ 助眠穩壓</span></li>
+<li>• 鈣 600–800mg（下午或睡前）<span class="caution">⚠ 與安穩錯開 ≥2 小時</span></li>
+</ul>
+</div>`;
+}
+
+function render(i){
+const m=menus[i];
+document.getElementById("content").innerHTML=
+card("🌅 早餐","breakfast",m.b)+
+card("☀️ 午餐","lunch",m.l)+
+card("🌙 晚餐","dinner",m.d)+
+supplements();
+
+document.querySelectorAll(".day-button").forEach((b,idx)=>b.classList.toggle("active",idx===i));
+}
+
+menus.forEach((m,i)=>{
+const btn=document.createElement("button");
+btn.className="day-button";
+btn.textContent=m.day;
+btn.onclick=()=>render(i);
+dayButtons.appendChild(btn);
+});
+
+const today=(new Date().getDay()+6)%7;
+render(today);
+</script>
+
+</body>
+</html>
