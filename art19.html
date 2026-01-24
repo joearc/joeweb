@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>19 世紀法國藝術教學手冊</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #EAF2F8;
+            --title-color: #154360;
+            --body-color: #212F3C;
+            --accent-color: #C0392B;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            font-family: 'Montserrat', sans-serif;
+            color: var(--body-color);
+        }
+        .presentation-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            padding: 40px 0;
+        }
+        .slide {
+            width: 1280px;
+            height: 720px;
+            background-color: var(--bg-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-shrink: 0;
+        }
+        .accent-bar {
+            width: 40px;
+            height: 4px;
+            background-color: var(--accent-color);
+            margin-bottom: 16px;
+        }
+        h1, h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--title-color);
+            margin: 0;
+        }
+        p, li {
+            line-height: 1.6;
+            font-size: 18px;
+        }
+        /* Title Slide */
+        .slide-title {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        .title-content {
+            padding: 120px 80px;
+            z-index: 2;
+        }
+        .title-content h1 { font-size: 64px; margin-bottom: 24px; }
+        .title-image-side {
+            background-color: var(--title-color);
+            position: relative;
+        }
+        .title-image-side img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+        .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to right, var(--bg-color) 0%, transparent 20%);
+        }
+
+        /* Content Slides */
+        .slide-content {
+            flex-direction: column;
+            padding: 60px 80px;
+        }
+        .slide-content h2 { font-size: 42px; margin-bottom: 30px; }
+        .two-col { display: flex; gap: 40px; }
+        .col { flex: 1; }
+        .img-box {
+            border: 1px solid #D5DBDB;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .img-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        
+        .quote-box {
+            border-top: 2px solid var(--title-color);
+            padding-top: 16px;
+            margin-bottom: 24px;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 22px;
+        }
+        .point-title { font-weight: 700; color: var(--accent-color); margin-bottom: 8px; text-transform: uppercase; }
+        
+        .step-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .step-card { text-align: center; }
+        .step-num { font-family: 'Playfair Display', serif; color: var(--accent-color); font-size: 24px; font-weight: 700; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide slide-title">
+            <div class="title-content">
+                <div class="accent-bar" style="width: 60px; height: 8px;"></div>
+                <h1>學院派方法：<br>19 世紀法國藝術<br>教學手冊</h1>
+                <p style="font-size: 28px; letter-spacing: 2px; text-transform: uppercase;">The Academic Method</p>
+            </div>
+            <div class="title-image-side">
+                <img src="img19art/sVQYuZXmqsH8.jpg" alt="Academy Studio">
+                <div class="overlay"></div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Philosophy -->
+        <div class="slide slide-content">
+            <div class="accent-bar"></div>
+            <h2>核心哲學：大師是練出來的</h2>
+            <div class="two-col">
+                <div class="col">
+                    <div class="quote-box">「別再說天分了，大師其實是靠一套超嚴格的系統『加工』出來的。」</div>
+                    <div class="point-title">大師不是天生</div>
+                    <p>學院派相信：只要方法對、夠自律，普通人也能變大師。這是一場有計畫的修行。</p>
+                </div>
+                <div class="col">
+                    <div class="point-title">素描就是基本功</div>
+                    <p>還沒學會走就別想跑。在碰畫筆前，你得先跟素描死磕到底，這才是最穩的捷徑。</p>
+                    <div class="point-title">慢工出細活</div>
+                    <p>一關練幾年是常態。基礎打得夠深，以後學色彩和構圖就像開了外掛一樣簡單。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Progression Overview -->
+        <div class="slide slide-content">
+            <div class="accent-bar"></div>
+            <h2>素描練功三部曲：眼手合一</h2>
+            <div class="step-grid">
+                <div class="step-card">
+                    <div class="step-num">STEP 01</div>
+                    <p><strong>大師作業抄起來</strong></p>
+                    <div class="img-box" style="height: 220px; margin: 15px 0;"><img src="img19art/PHeXBNiQOirk.jpeg"></div>
+                    <p style="font-size: 16px;">先學會大師怎麼畫線條。透過臨摹，把最高標準內化成自己的直覺。</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">STEP 02</div>
+                    <p><strong>石膏像打怪練習</strong></p>
+                    <div class="img-box" style="height: 220px; margin: 15px 0;"><img src="img19art/IBgooOVCGTWB.jpg"></div>
+                    <p style="font-size: 16px;">從平面轉向立體。專注在石膏像的結構與光影，排除雜訊。</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">STEP 03</div>
+                    <p><strong>真人實戰挑戰</strong></p>
+                    <div class="img-box" style="height: 220px; margin: 15px 0;"><img src="img19art/OjxQskMa44Ft.jpg"></div>
+                    <p style="font-size: 16px;">整合所有技能。在複雜的真人模型前，學會抓重點、捨棄細節。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Phase 1 -->
+        <div class="slide slide-content">
+            <div class="accent-bar"></div>
+            <h2>第一關：大師怎麼畫，你就怎麼畫</h2>
+            <div class="two-col">
+                <div class="col">
+                    <div class="point-title">零件拆解練習</div>
+                    <p>別急著畫全身！先從眼睛、鼻子、嘴巴一個個練熟，再慢慢拼成整個人。基礎打穩了，後面才不會亂。</p>
+                    <div class="point-title">畫個輔助線</div>
+                    <p>利用十字輔助線來對齊。這能幫你精準抓到比例和角度，讓你的畫不再「歪掉」。</p>
+                </div>
+                <div class="col img-box" style="height: 450px;">
+                    <img src="img19art/aeOcYvI6kzNK.jpg">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Phase 2 -->
+        <div class="slide slide-content">
+            <div class="accent-bar"></div>
+            <h2>第二關：石膏像，最完美的練習對象</h2>
+            <div class="two-col">
+                <div class="col">
+                    <div class="point-title">為什麼練石膏像？</div>
+                    <p><strong>它不會動：</strong> 表面平滑、沒有皺紋，讓你專心看清楚結構。<br><strong>它沒雜色：</strong> 純白表面最適合觀察光影，不用擔心膚色干擾。</p>
+                    <div class="point-title">絕招：瞇瞇眼大法</div>
+                    <p>瞇起眼睛看，把細節模糊掉。這樣你就能一眼抓到光影的大塊面，這才是立體感的關鍵。</p>
+                </div>
+                <div class="col img-box" style="height: 450px;">
+                    <img src="img19art/OjxQskMa44Ft.jpg">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Phase 3 -->
+        <div class="slide slide-content">
+            <div class="accent-bar"></div>
+            <h2>第三關：真人實戰，挑戰生命力</h2>
+            <div class="two-col">
+                <div class="col">
+                    <div class="point-title">面對終極大魔王</div>
+                    <p>這是素描訓練的最後一關。真人模型有細微的膚色變化和複雜的細節，你得把之前學到的所有招式全部用上。</p>
+                    <div class="point-title">學會「抓大放小」</div>
+                    <p>重點不在於畫得多細，而在於「選擇」。面對海量的視覺資訊，你要決定哪些該畫、哪些該捨棄，作品才會生動。</p>
+                </div>
+                <div class="col img-box" style="height: 450px;">
+                    <img src="img19art/JdjsrIL65LoJ.jpg">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Transition -->
+        <div class="slide slide-content">
+            <div class="accent-bar"></div>
+            <h2>終於可以畫畫了！從素描到色彩</h2>
+            <div class="two-col">
+                <div class="col">
+                    <div class="point-title">素描練好，繪畫像開掛</div>
+                    <p>掌握了比例和光影，色彩和筆觸就只是錦上添花。</p>
+                    <div class="point-title">去博物館「抄作業」</div>
+                    <p>「油畫習作」練習。羅浮宮研究大師，把招式學過來，變成自己的東西。</p>
+                </div>
+                <div class="col img-box" style="height: 450px;">
+                    <img src="img19art/sVQYuZXmqsH8.jpg">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Principle 1 -->
+        <div class="slide slide-content">
+            <div class="accent-bar"></div>
+            <h2>原則一：地圖在手，練功不愁</h2>
+            <div class="two-col">
+                <div class="col img-box" style="height: 450px;">
+                    <img src="img19art/abbDmaeSjc2O.jpg">
+                </div>
+                <div class="col">
+                    <div class="point-title">知道終點在哪裡</div>
+                    <p>學生很清楚：要成為大師，得先過素描三關，再進階到油畫。目標明確，才不會迷路。</p>
+                    <div class="point-title">不跳級，不卡關</div>
+                    <p>每個小步驟都設計好了。先練線條再練光影，確保你每一階段都練紮實了才往下走。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Principle 2 -->
+        <div class="slide slide-content">
+            <div class="accent-bar"></div>
+            <h2>原則二：除了苦練，也要會玩</h2>
+            <div class="two-col">
+                <div class="col">
+                    <div class="point-title">速寫：釋放你的靈魂</div>
+                    <p>如果只有死板的練習，畫作會沒靈魂。學院派鼓勵學生瘋狂玩速寫，這不是浪費時間，是為了平衡僵硬的訓練。</p>
+                    <p>• <strong>隨手畫：</strong> 帶著速寫本，看到什麼有趣就畫什麼。<br>• <strong>大膽試：</strong> 這裡沒有標準答案，你可以盡情實驗。<br>• <strong>比創意：</strong> 學校甚至會辦速寫比賽，看誰最有靈氣。</p>
+                </div>
+                <div class="col img-box" style="height: 450px;">
+                    <img src="img19art/boEmmM0o1yFm.jpg">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Principle 3 -->
+        <div class="slide slide-content">
+            <div class="accent-bar"></div>
+            <h2>原則三：挑戰極限，大師帶你飛</h2>
+            <div class="two-col">
+                <div class="col">
+                    <div class="point-title">跳出舒適圈</div>
+                    <p>練習不能太簡單。難度要剛好「高出你一點點」，這樣你的實力才會被逼著成長。</p>
+                    <div class="point-title">大師幫你改作業</div>
+                    <p>導師會直接在你的畫上動筆。這種「神隊友」的即時修正，能讓你瞬間看清自己的盲點。</p>
+                </div>
+                <div class="col">
+                    <div class="img-box" style="height: 200px; margin-bottom: 20px;"><img src="img19art/bU2BaDt99epI.jpg"></div>
+                    <div class="img-box" style="height: 200px;"><img src="img19art/ThTdEOd8bAxZ.jpg"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Principle 4 -->
+        <div class="slide slide-content">
+            <div class="accent-bar"></div>
+            <h2>原則四：站在巨人的肩膀上</h2>
+            <div class="two-col">
+                <div class="col">
+                    <div class="quote-box">「想練好手感？先去抄大師的作品就對了。」 — 達文西</div>
+                    <div class="point-title">新手：學大師的語法</div>
+                    <p>剛開始，我們先模仿。學大師怎麼處理線條和構圖，把這些「高級感」內化成自己的基本功。</p>
+                    <div class="point-title">高手：跟大師聊天</div>
+                    <p>練到一定程度，就不只是模仿了。你會開始分析大師為什麼這樣畫，從中偷師並玩出自己的新花樣。</p>
+                </div>
+                <div class="col img-box" style="height: 450px;">
+                    <img src="img19art/zbwFRvFh3sr2.jpg">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Conclusion -->
+        <div class="slide slide-content" style="text-align: center; align-items: center; justify-content: center;">
+            <div class="accent-bar" style="margin: 0 auto 24px auto;"></div>
+            <h2>總結：這套練功秘笈，現在也超好用</h2>
+            <div class="step-grid" style="margin-top: 40px;">
+                <div class="pillar" style="border-top: 2px solid var(--title-color); padding-top: 20px;">
+                    <div class="point-title">有地圖不迷路</div>
+                    <p style="font-size: 16px;">明確的進階路徑，讓你知道現在該練什麼。</p>
+                </div>
+                <div class="pillar" style="border-top: 2px solid var(--title-color); padding-top: 20px;">
+                    <div class="point-title">苦練也要會玩</div>
+                    <p style="font-size: 16px;">技術訓練搭配自由速寫，讓畫作有技術也有靈魂。</p>
+                </div>
+                <div class="pillar" style="border-top: 2px solid var(--title-color); padding-top: 20px;">
+                    <div class="point-title">挑戰甜蜜點</div>
+                    <p style="font-size: 16px;">跳出舒適圈，加上大師修正，進步速度最快。</p>
+                </div>
+            </div>
+            <p style="font-family: 'Playfair Display', serif; font-size: 24px; font-style: italic; margin-top: 60px; max-width: 800px;">
+                「紀律給你技術，創意給你靈魂。這套平衡的藍圖，至今仍是練就頂尖藝術實力的最強基石。」
+            </p>
+        </div>
+    </div>
+</body>
+</html>
