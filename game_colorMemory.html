@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dialed Clone - 5題挑戰模式</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: white;
+            overflow-x: hidden;
+        }
+        .slider-hue {
+            background: linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
+        }
+        input[type=range] {
+            -webkit-appearance: none;
+            background: #334155;
+            height: 12px;
+            border-radius: 6px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            border: 2px solid #3b82f6;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div id="game-container" class="w-full max-w-md text-center">
+        <!-- 頂部資訊欄 -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-black tracking-tighter italic">DIALED <span class="text-blue-500">5-ROUND</span></h1>
+            <div id="progress-tag" class="hidden px-3 py-1 bg-slate-800 rounded-full text-xs font-mono text-blue-400">
+                ROUND: <span id="current-round">1</span>/5
+            </div>
+        </div>
+
+        <p id="status-text" class="text-slate-400 mb-6 h-6">準備好測試你的色彩記憶了嗎？</p>
+
+        <!-- 顏色顯示區 -->
+        <div id="color-box" class="w-full aspect-square rounded-[2rem] shadow-2xl mb-8 flex items-center justify-center text-6xl transition-all duration-500 transform relative overflow-hidden">
+            <span id="countdown-timer" class="font-bold opacity-30 select-none"></span>
+            <!-- 隱藏的提示 -->
+            <div id="compare-line" class="absolute inset-0 flex hidden">
+                <div id="final-target" class="w-1/2 h-full flex items-center justify-center">
+                    <span class="text-xs font-bold bg-black/30 px-2 py-1 rounded backdrop-blur-sm">原色</span>
+                </div>
+                <div id="final-user" class="w-1/2 h-full flex items-center justify-center border-l border-white/20">
+                    <span class="text-xs font-bold bg-black/30 px-2 py-1 rounded backdrop-blur-sm">你的調色</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 調色控制項 -->
+        <div id="controls" class="space-y-6 hidden">
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between text-[10px] font-bold uppercase text-slate-500 mb-2">
+                        <span>色相 Hue</span>
+                        <span id="val-hue">180°</span>
+                    </div>
+                    <input type="range" id="hue" min="0" max="360" value="180" class="w-full slider-hue appearance-none">
+                </div>
+                <div>
+                    <div class="flex justify-between text-[10px] font-bold uppercase text-slate-500 mb-2">
+                        <span>彩度 Saturation</span>
+                        <span id="val-sat">50%</span>
+                    </div>
+                    <input type="range" id="sat" min="0" max="100" value="50" class="w-full appearance-none">
+                </div>
+                <div>
+                    <div class="flex justify-between text-[10px] font-bold uppercase text-slate-500 mb-2">
+                        <span>明度 Lightness</span>
+                        <span id="val-light">50%</span>
+                    </div>
+                    <input type="range" id="light" min="0" max="100" value="50" class="w-full appearance-none">
+                </div>
+            </div>
+
+            <button id="submit-btn" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-500 transition-all active:scale-95">
+                確認顏色
+            </button>
+        </div>
+
+        <!-- 每一題結束後的過渡畫面 -->
+        <div id="round-feedback" class="hidden space-y-4">
+            <div class="bg-slate-800/50 p-4 rounded-2xl">
+                <p class="text-xs text-slate-500 uppercase">本題得分</p>
+                <p id="round-score" class="text-4xl font-black">0</p>
+            </div>
+            <button id="next-btn" class="w-full py-4 bg-white text-black font-bold rounded-2xl hover:bg-slate-200">
+                下一題
+            </button>
+        </div>
+
+        <!-- 最終總結畫面 -->
+        <div id="final-screen" class="hidden space-y-6">
+            <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 rounded-[2rem] shadow-xl">
+                <p class="text-blue-100 text-sm font-semibold uppercase tracking-widest mb-1">總結得分</p>
+                <h2 id="total-score" class="text-7xl font-black text-white mb-2">0</h2>
+                <p id="average-text" class="text-blue-200 text-sm">平均每題 0 分</p>
+            </div>
+            
+            <div id="history-dots" class="flex justify-center gap-2">
+                <!-- 題項小圓點會生成在這裡 -->
+            </div>
+
+            <button onclick="initSeries()" class="w-full py-4 border-2 border-slate-700 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all">
+                重新挑戰
+            </button>
+        </div>
+
+        <!-- 初始開始畫面 -->
+        <div id="start-screen">
+            <div class="p-8 bg-slate-800/30 rounded-3xl mb-8 border border-slate-700">
+                <p class="text-slate-300 leading-relaxed">
+                    你將面臨 <span class="text-blue-400 font-bold">5 題</span> 色彩記憶測試。<br>
+                    每一題有 <span class="text-blue-400 font-bold">5 秒</span> 記住目標顏色。<br>
+                    最後將計算你的總得分。
+                </p>
+            </div>
+            <button onclick="initSeries()" class="px-12 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20 transition-all active:scale-95">
+                開始 5 題挑戰
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 遊戲狀態
+        let currentRound = 0;
+        let totalScore = 0;
+        let roundScores = [];
+        let targetColor;
+        let countdownInterval;
+        const TOTAL_ROUNDS = 5;
+        const SHOW_TIME = 5;
+
+        // DOM
+        const colorBox = document.getElementById('color-box');
+        const statusText = document.getElementById('status-text');
+        const countdownTimer = document.getElementById('countdown-timer');
+        const controls = document.getElementById('controls');
+        const startScreen = document.getElementById('start-screen');
+        const roundFeedback = document.getElementById('round-feedback');
+        const finalScreen = document.getElementById('final-screen');
+        const progressTag = document.getElementById('progress-tag');
+        const compareLine = document.getElementById('compare-line');
+
+        // 初始化一輪 5 題
+        function initSeries() {
+            currentRound = 0;
+            totalScore = 0;
+            roundScores = [];
+            colorBox.classList.remove('hidden');
+            statusText.classList.remove('hidden');
+            finalScreen.classList.add('hidden');
+            startScreen.classList.add('hidden');
+            progressTag.classList.remove('hidden');
+            nextRound();
+        }
+
+        // 進入下一題
+        function nextRound() {
+            currentRound++;
+            if (currentRound > TOTAL_ROUNDS) {
+                showFinalSummary();
+                return;
+            }
+
+            // 更新 UI
+            document.getElementById('current-round').innerText = currentRound;
+            roundFeedback.classList.add('hidden');
+            compareLine.classList.add('hidden');
+            controls.classList.add('hidden');
+            statusText.innerText = "記住這個顏色...";
+            
+            // 重置滑桿到中位
+            document.getElementById('hue').value = 180;
+            document.getElementById('sat').value = 50;
+            document.getElementById('light').value = 50;
+            updateValueLabels();
+
+            // 生成隨機色
+            targetColor = chroma.random().saturate(1.5);
+            colorBox.style.backgroundColor = targetColor.hex();
+            
+            // 倒數
+            let timeLeft = SHOW_TIME;
+            countdownTimer.innerText = timeLeft;
+            clearInterval(countdownInterval);
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                countdownTimer.innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    startGuessing();
+                }
+            }, 1000);
+        }
+
+        function startGuessing() {
+            clearInterval(countdownInterval);
+            countdownTimer.innerText = "";
+            colorBox.style.backgroundColor = "#1e293b"; // 隱藏
+            statusText.innerText = "憑記憶還原顏色";
+            controls.classList.remove('hidden');
+            updateUserPreview();
+        }
+
+        // 滑桿邏輯
+        function updateValueLabels() {
+            document.getElementById('val-hue').innerText = document.getElementById('hue').value + "°";
+            document.getElementById('val-sat').innerText = document.getElementById('sat').value + "%";
+            document.getElementById('val-light').innerText = document.getElementById('light').value + "%";
+        }
+
+        function updateUserPreview() {
+            const h = document.getElementById('hue').value;
+            const s = document.getElementById('sat').value / 100;
+            const l = document.getElementById('light').value / 100;
+            const userColor = chroma.hsl(h, s, l);
+            colorBox.style.backgroundColor = userColor.hex();
+            updateValueLabels();
+        }
+
+        [document.getElementById('hue'), document.getElementById('sat'), document.getElementById('light')].forEach(el => {
+            el.addEventListener('input', updateUserPreview);
+        });
+
+        // 提交本題
+        document.getElementById('submit-btn').onclick = () => {
+            const h = document.getElementById('hue').value;
+            const s = document.getElementById('sat').value / 100;
+            const l = document.getElementById('light').value / 100;
+            const userColor = chroma.hsl(h, s, l);
+
+            // 計算 Delta E 誤差
+            const deltaE = chroma.deltaE(targetColor, userColor);
+            const score = Math.max(0, 100 - (deltaE * 2.5));
+            
+            roundScores.push(score);
+            totalScore += score;
+
+            showRoundResult(score, targetColor.hex(), userColor.hex());
+        };
+
+        function showRoundResult(score, targetHex, userHex) {
+            controls.classList.add('hidden');
+            statusText.innerText = "比對結果";
+            
+            // 顯示對比線與標籤
+            compareLine.classList.remove('hidden');
+            document.getElementById('final-target').style.backgroundColor = targetHex;
+            document.getElementById('final-user').style.backgroundColor = userHex;
+
+            document.getElementById('round-score').innerText = score.toFixed(1);
+            roundFeedback.classList.remove('hidden');
+        }
+
+        document.getElementById('next-btn').onclick = nextRound;
+
+        // 顯示最後結算
+        function showFinalSummary() {
+            progressTag.classList.add('hidden');
+            roundFeedback.classList.add('hidden');
+            compareLine.classList.add('hidden');
+            colorBox.classList.add('hidden');
+            statusText.classList.add('hidden');
+            finalScreen.classList.remove('hidden');
+
+            const avg = totalScore / TOTAL_ROUNDS;
+            document.getElementById('total-score').innerText = totalScore.toFixed(0);
+            document.getElementById('average-text').innerText = `平均每題 ${avg.toFixed(1)} 分`;
+
+            // 生成得分小點
+            const historyContainer = document.getElementById('history-dots');
+            historyContainer.innerHTML = '';
+            roundScores.forEach((s, i) => {
+                const dot = document.createElement('div');
+                dot.className = "w-10 h-10 rounded-full flex items-center justify-center text-[10px] font-bold";
+                if (s > 90) dot.classList.add('bg-green-500', 'text-white');
+                else if (s > 70) dot.classList.add('bg-blue-500', 'text-white');
+                else dot.classList.add('bg-slate-700', 'text-slate-300');
+                dot.innerText = s.toFixed(0);
+                historyContainer.appendChild(dot);
+            });
+        }
+    </script>
+</body>
+</html>
