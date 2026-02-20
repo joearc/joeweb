@@ -36,6 +36,18 @@
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4">
 
+       <!-- 全域導覽列 -->
+<div id="nav"></div>
+
+<script>
+  fetch("./nav.html")
+    .then(r => r.text())
+    .then(html => document.getElementById("nav").innerHTML = html);
+</script>
+
+   
+   
+   
     <div id="game-container" class="w-full max-w-md text-center">
         <!-- 頂部資訊欄 -->
         <div class="flex justify-between items-center mb-6">
