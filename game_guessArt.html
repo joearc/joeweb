@@ -197,22 +197,7 @@ body {
     <script>
       // 模擬導覽列，如果 nav.html 不存在則顯示預設
       fetch("./nav.html")
-        .then(r => {
-            if(!r.ok) throw new Error();
-            return r.text();
-        })
-        .then(html => document.getElementById("nav").innerHTML = html)
-        .catch(() => {
-            document.getElementById("nav").innerHTML = `
-                <nav class="global-nav">
-                    <ul>
-                        <li><a href="#" class="active">藝術挑戰</a></li>
-                        <li><a href="#">作品廊</a></li>
-                        <li><a href="#">關於我們</a></li>
-                    </ul>
-                </nav>
-            `;
-        });
+        
     </script>
 
     <!-- 開始畫面 -->
