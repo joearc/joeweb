@@ -104,6 +104,12 @@
     </style>
 </head>
 <body>
+        <div id="nav" class="w-full mb-12"></div>
+<script>
+  fetch("./nav.html")
+    .then(r => r.text())
+    .then(html => document.getElementById("nav").innerHTML = html);
+</script>
     <div class="presentation-container">
         <!-- Slide 1: Title -->
         <div class="slide slide-title">

@@ -192,13 +192,12 @@ body {
     
 <body class="p-6 md:p-12">
     <!-- 全域導覽列 -->
-    <div id="nav" class="w-full mb-12"></div>
-
-    <script>
-      // 模擬導覽列，如果 nav.html 不存在則顯示預設
-      fetch("./nav.html")
-        
-    </script>
+     <div id="nav" class="w-full mb-12"></div>
+<script>
+  fetch("./nav.html")
+    .then(r => r.text())
+    .then(html => document.getElementById("nav").innerHTML = html);
+</script>
 
     <!-- 開始畫面 -->
     <div id="start-screen" class="text-center glass-panel p-12 max-w-md w-full fade-in">

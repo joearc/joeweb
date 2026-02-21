@@ -8,19 +8,30 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+        :root {
+            --bg:        #1a1612;
+            --surface:   #231e19;
+            --border:    #3a3028;
+            --muted:     #6b5e4e;
+            --label:     #9e8c78;
+            --text:      #e8ddd0;
+            --accent:    #c4a882;
+            --accent-dk: #a0845e;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0f172a;
-            color: white;
+            background-color: var(--bg);
+            color: var(--text);
             overflow-x: hidden;
         }
 
-        /* 導覽列樣式 */
         .global-nav {
             width: 100%;
-            background-color: #1e293b;
+            background-color: var(--surface);
             padding: 1rem;
-            border-bottom: 1px solid #334155;
+            border-bottom: 1px solid var(--border);
             margin-bottom: 2rem;
         }
         .global-nav ul {
@@ -31,14 +42,14 @@
             flex-wrap: wrap;
         }
         .global-nav a {
-            color: #94a3b8;
+            color: var(--label);
             text-decoration: none;
             font-size: 0.875rem;
             font-weight: 600;
             transition: color 0.2s;
         }
         .global-nav a:hover {
-            color: #3b82f6;
+            color: var(--accent);
         }
 
         .slider-hue {
@@ -46,7 +57,7 @@
         }
         input[type=range] {
             -webkit-appearance: none;
-            background: #334155;
+            background: var(--border);
             height: 8px;
             border-radius: 4px;
             flex-grow: 1;
@@ -56,9 +67,9 @@
             height: 20px;
             width: 20px;
             border-radius: 50%;
-            background: white;
+            background: var(--accent);
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            box-shadow: 0 0 10px rgba(0,0,0,0.6);
         }
         .step-btn {
             display: flex;
@@ -66,64 +77,66 @@
             justify-content: center;
             width: 32px;
             height: 32px;
-            background-color: #1e293b;
-            border: 1px solid #334155;
+            background-color: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 8px;
             transition: all 0.2s;
             user-select: none;
             cursor: pointer;
+            color: var(--label);
         }
         .step-btn:hover {
-            background-color: #334155;
+            background-color: var(--border);
+            color: var(--text);
         }
         .step-btn:active {
             transform: scale(0.9);
-            background-color: #3b82f6;
+            background-color: var(--accent-dk);
+            color: var(--bg);
         }
     </style>
 </head>
 <body class="flex flex-col items-center min-h-screen">
 
-    <!-- 插入導覽列 -->
-     <div id="nav" class="w-full mb-12"></div>
-<script>
-  fetch("./nav.html")
-    .then(r => r.text())
-    .then(html => document.getElementById("nav").innerHTML = html);
-</script>
+    <div id="nav" class="w-full mb-12"></div>
+    <script>
+      fetch("./nav.html")
+        .then(r => r.text())
+        .then(html => document.getElementById("nav").innerHTML = html);
+    </script>
 
     <div id="game-container" class="w-full max-w-2xl text-center px-4">
         <!-- 頂部資訊 -->
         <div class="flex justify-between items-center mb-6 px-4">
-            <h1 class="text-2xl font-black tracking-tighter">COLOR <span class="text-blue-500">MATCH</span></h1>
-            <div id="progress-tag" class="hidden px-4 py-1 bg-slate-800 rounded-full text-xs font-mono text-blue-400 border border-slate-700">
+            <h1 class="text-2xl font-black tracking-tighter" style="color:var(--text)">
+                COLOR <span style="color:var(--accent)">MATCH</span>
+            </h1>
+            <div id="progress-tag" class="hidden px-4 py-1 rounded-full text-xs font-mono border"
+                 style="background:var(--surface); color:var(--accent); border-color:var(--border)">
                 ROUND: <span id="current-round">1</span>/5
             </div>
         </div>
 
         <!-- 核心比對區域 -->
         <div id="play-area" class="hidden grid grid-cols-2 gap-4 mb-8">
-            <!-- 左側：目標對照組 -->
             <div id="target-bg" class="aspect-[4/5] rounded-[2rem] flex items-center justify-center shadow-2xl relative transition-colors duration-700">
                 <div id="target-fg" class="w-1/2 aspect-square rounded-2xl shadow-lg border border-white/10 transition-colors duration-700"></div>
-                <div class="absolute bottom-4 text-[10px] font-bold uppercase tracking-widest opacity-40">目標 (Target)</div>
+                <div class="absolute bottom-4 text-[10px] font-bold uppercase tracking-widest" style="color:var(--label); opacity:0.7">目標 (Target)</div>
             </div>
-
-            <!-- 右側：玩家操作組 -->
             <div id="user-bg" class="aspect-[4/5] rounded-[2rem] flex items-center justify-center shadow-2xl relative transition-colors duration-700">
                 <div id="user-fg" class="w-1/2 aspect-square rounded-2xl shadow-lg border border-white/10 transition-colors duration-300"></div>
-                <div class="absolute bottom-4 text-[10px] font-bold uppercase tracking-widest opacity-40">你的調色 (You)</div>
+                <div class="absolute bottom-4 text-[10px] font-bold uppercase tracking-widest" style="color:var(--label); opacity:0.7">你的調色 (You)</div>
             </div>
         </div>
 
         <!-- 調色控制項 -->
         <div id="controls" class="max-w-md mx-auto space-y-4 hidden">
-            <div class="grid gap-4 bg-slate-900/50 p-6 rounded-3xl border border-slate-800">
+            <div class="grid gap-4 p-6 rounded-3xl border"
+                 style="background:rgba(35,30,25,0.65); border-color:var(--border)">
                 <!-- 色相 Hue -->
                 <div>
-                    <div class="flex justify-between text-[10px] font-bold uppercase text-slate-500 mb-2">
-                        <span>色相 Hue</span>
-                        <span id="val-hue">0°</span>
+                    <div class="flex justify-between text-[10px] font-bold uppercase mb-2" style="color:var(--muted)">
+                        <span>色相 Hue</span><span id="val-hue">0°</span>
                     </div>
                     <div class="flex items-center gap-3">
                         <button class="step-btn" onclick="adjustValue('hue', -1)">
@@ -135,12 +148,10 @@
                         </button>
                     </div>
                 </div>
-
                 <!-- 彩度 Saturation -->
                 <div>
-                    <div class="flex justify-between text-[10px] font-bold uppercase text-slate-500 mb-2">
-                        <span>彩度 Saturation</span>
-                        <span id="val-sat">40%</span>
+                    <div class="flex justify-between text-[10px] font-bold uppercase mb-2" style="color:var(--muted)">
+                        <span>彩度 Saturation</span><span id="val-sat">40%</span>
                     </div>
                     <div class="flex items-center gap-3">
                         <button class="step-btn" onclick="adjustValue('sat', -1)">
@@ -152,12 +163,10 @@
                         </button>
                     </div>
                 </div>
-
                 <!-- 明度 Lightness -->
                 <div>
-                    <div class="flex justify-between text-[10px] font-bold uppercase text-slate-500 mb-2">
-                        <span>明度 Lightness</span>
-                        <span id="val-light">60%</span>
+                    <div class="flex justify-between text-[10px] font-bold uppercase mb-2" style="color:var(--muted)">
+                        <span>明度 Lightness</span><span id="val-light">60%</span>
                     </div>
                     <div class="flex items-center gap-3">
                         <button class="step-btn" onclick="adjustValue('light', -1)">
@@ -171,44 +180,59 @@
                 </div>
             </div>
 
-            <button id="submit-btn" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-500 transition-all active:scale-95 shadow-lg shadow-blue-500/20">
+            <button id="submit-btn" class="w-full py-4 font-bold rounded-2xl transition-all active:scale-95"
+                    style="background:var(--accent-dk); color:var(--bg); box-shadow:0 8px 24px rgba(160,132,94,0.18)"
+                    onmouseover="this.style.background='var(--accent)'"
+                    onmouseout="this.style.background='var(--accent-dk)'">
                 確認答案
             </button>
         </div>
 
         <!-- 每一題反饋 -->
         <div id="round-feedback" class="hidden space-y-4 max-w-md mx-auto">
-            <div class="bg-white/10 p-6 rounded-3xl backdrop-blur-md">
-                <p class="text-xs text-slate-400 uppercase tracking-widest mb-1">本題得分</p>
-                <p id="round-score" class="text-5xl font-black text-white">0</p>
+            <div class="p-6 rounded-3xl border"
+                 style="background:rgba(35,30,25,0.7); border-color:var(--border)">
+                <p class="text-xs uppercase tracking-widest mb-1" style="color:var(--muted)">本題得分</p>
+                <p id="round-score" class="text-5xl font-black" style="color:var(--text)">0</p>
             </div>
-            <button id="next-btn" class="w-full py-4 bg-white text-black font-bold rounded-2xl hover:bg-slate-200 transition-all">
+            <button id="next-btn" class="w-full py-4 font-bold rounded-2xl transition-all border"
+                    style="background:var(--surface); color:var(--text); border-color:var(--border)"
+                    onmouseover="this.style.background='var(--border)'"
+                    onmouseout="this.style.background='var(--surface)'">
                 下一題
             </button>
         </div>
 
         <!-- 結算畫面 -->
         <div id="final-screen" class="hidden space-y-6 max-w-md mx-auto">
-            <div class="bg-gradient-to-br from-indigo-600 to-purple-700 p-10 rounded-[3rem] shadow-2xl">
-                <p class="text-indigo-100 text-sm font-semibold uppercase tracking-widest mb-2">挑戰結束</p>
-                <h2 id="total-score" class="text-8xl font-black text-white mb-2">0</h2>
-                <p id="average-text" class="text-indigo-200 text-sm">平均得分 0</p>
+            <div class="p-10 rounded-[3rem] shadow-2xl"
+                 style="background: linear-gradient(135deg, #3d2e1e 0%, #2a1f12 100%); border: 1px solid var(--accent-dk)">
+                <p class="text-sm font-semibold uppercase tracking-widest mb-2" style="color:var(--label)">挑戰結束</p>
+                <h2 id="total-score" class="text-8xl font-black mb-2" style="color:var(--accent)">0</h2>
+                <p id="average-text" class="text-sm" style="color:var(--muted)">平均得分 0</p>
             </div>
-            <button onclick="initGame()" class="w-full py-4 bg-slate-800 text-white font-bold rounded-2xl border border-slate-700 hover:bg-slate-700 transition-all">
+            <button onclick="initGame()" class="w-full py-4 font-bold rounded-2xl border transition-all"
+                    style="background:var(--surface); color:var(--text); border-color:var(--border)"
+                    onmouseover="this.style.background='var(--border)'"
+                    onmouseout="this.style.background='var(--surface)'">
                 再次挑戰
             </button>
         </div>
 
         <!-- 開始畫面 -->
         <div id="start-screen" class="max-w-md mx-auto">
-            <div class="p-8 bg-slate-900/50 rounded-[2.5rem] mb-8 border border-slate-800">
-                <p class="text-slate-300 leading-relaxed mb-4">
-                    調整右側的<span class="text-white font-bold">前景方塊</span>，<br>
+            <div class="p-8 rounded-[2.5rem] mb-8 border"
+                 style="background:rgba(35,30,25,0.5); border-color:var(--border)">
+                <p class="leading-relaxed mb-4" style="color:var(--label)">
+                    調整右側的<span style="color:var(--text); font-weight:700">前景方塊</span>，<br>
                     使其與左側的目標顏色一致。
                 </p>
-                <p class="text-xs text-slate-500 uppercase tracking-tighter">一共五題</p>
+                <p class="text-xs uppercase tracking-tighter" style="color:var(--muted)">一共五題</p>
             </div>
-            <button onclick="initGame()" class="px-12 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl transition-all shadow-xl shadow-blue-500/20 active:scale-95">
+            <button onclick="initGame()" class="px-12 py-4 font-bold rounded-2xl transition-all active:scale-95"
+                    style="background:var(--accent-dk); color:var(--bg); box-shadow:0 8px 24px rgba(160,132,94,0.2)"
+                    onmouseover="this.style.background='var(--accent)'"
+                    onmouseout="this.style.background='var(--accent-dk)'">
                 開始挑戰
             </button>
         </div>
@@ -221,7 +245,6 @@
         let commonBackground;
         const TOTAL_ROUNDS = 5;
 
-        // DOM 元素
         const playArea = document.getElementById('play-area');
         const targetBg = document.getElementById('target-bg');
         const targetFg = document.getElementById('target-fg');
@@ -239,7 +262,7 @@
 
         function getMutedColor() {
             const h = Math.random() * 360;
-            const s = 0.3 + Math.random() * 0.4; 
+            const s = 0.3 + Math.random() * 0.4;
             const l = 0.4 + Math.random() * 0.3;
             return chroma.hsl(h, s, l);
         }
@@ -269,12 +292,11 @@
                 showSummary();
                 return;
             }
-
             document.getElementById('current-round').innerText = currentRound;
             roundFeedback.classList.add('hidden');
             controls.classList.remove('hidden');
 
-            commonBackground = getMutedColor().darken(2).desaturate(0.5); 
+            commonBackground = getMutedColor().darken(2).desaturate(0.5);
             targetBg.style.backgroundColor = commonBackground.hex();
             userBg.style.backgroundColor = commonBackground.hex();
 
@@ -284,7 +306,6 @@
             hueIn.value = Math.floor(Math.random() * 360);
             satIn.value = 40;
             lightIn.value = 60;
-            
             updateUserColor();
         }
 
@@ -294,7 +315,6 @@
             const l = lightIn.value / 100;
             const userColor = chroma.hsl(h, s, l);
             userFg.style.backgroundColor = userColor.hex();
-
             document.getElementById('val-hue').innerText = h + "°";
             document.getElementById('val-sat').innerText = satIn.value + "%";
             document.getElementById('val-light').innerText = lightIn.value + "%";
@@ -307,12 +327,9 @@
             const s = satIn.value / 100;
             const l = lightIn.value / 100;
             const userColor = chroma.hsl(h, s, l);
-
             const deltaE = chroma.deltaE(targetForeground, userColor);
             const score = Math.max(0, 100 - (deltaE * 2.8));
-
             totalScore += score;
-            
             controls.classList.add('hidden');
             document.getElementById('round-score').innerText = score.toFixed(1);
             roundFeedback.classList.remove('hidden');
@@ -325,7 +342,6 @@
             progressTag.classList.add('hidden');
             roundFeedback.classList.add('hidden');
             finalScreen.classList.remove('hidden');
-
             document.getElementById('total-score').innerText = totalScore.toFixed(0);
             document.getElementById('average-text').innerText = `總平均得分 ${(totalScore / TOTAL_ROUNDS).toFixed(1)}`;
         }
