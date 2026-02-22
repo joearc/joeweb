@@ -98,12 +98,49 @@
 </head>
 <body class="flex flex-col items-center min-h-screen">
 
-    <div id="nav" class="w-full mb-12"></div>
-    <script>
-      fetch("./nav.html")
-        .then(r => r.text())
-        .then(html => document.getElementById("nav").innerHTML = html);
-    </script>
+
+<div id="nav"></div>
+<script>
+  // nav 連結備援（Claude 預覽 / 離線時使用）
+  const NAV_FALLBACK = `
+    <nav class="global-nav">
+      <ul>
+        <li><a href="./index.html">首頁</a></li>
+        <li><a href="./about.html">about me</a></li>
+        <li><a href="game_colorMemory.html">ColorMatch</a></li>
+        <li><a href="game_dot.html">點點記憶大挑戰</a></li>
+        <li><a href="./art19.html">19世紀藝術家</a></li>
+        <li><a href="./game1.html">小遊戲猜地名</a></li>
+        <li><a href="./game_color.html">明暗色彩分析</a></li>
+        <li><a href="./game_guessArt.html">小遊戲_猜藝術家</a></li>
+      </ul>
+    </nav>`;
+
+  function initNav(html) {
+    const navContainer = document.getElementById('nav');
+    navContainer.innerHTML = html;
+    const navEl = navContainer.querySelector('.global-nav');
+    const ul = navContainer.querySelector('ul');
+    if (!navEl || !ul) return;
+    // 插入漢堡按鈕
+    const inner = document.createElement('div');
+    inner.className = 'nav-inner';
+    inner.innerHTML = `
+      <span class="nav-brand">MENU</span>
+      <button class="nav-toggle" id="nav-toggle" aria-label="開啟選單">
+        <span></span><span></span><span></span>
+      </button>`;
+    navEl.insertBefore(inner, ul);
+    document.getElementById('nav-toggle').addEventListener('click', () => {
+      ul.classList.toggle('open');
+    });
+  }
+
+  fetch("./nav.html")
+    .then(r => { if (!r.ok) throw new Error(); return r.text(); })
+    .then(html => initNav(html))
+    .catch(() => initNav(NAV_FALLBACK));
+</script>
 
     <div id="game-container" class="w-full max-w-2xl text-center px-4">
         <!-- 頂部資訊 -->
