@@ -100,46 +100,145 @@
             pointer-events: none;
             transform-origin: left center;
         }
+        /* ── NAV ── */
         .global-nav {
             width: 100%;
             background-color: var(--surface);
-            padding: 1rem;
             border-bottom: 1px solid var(--border);
             margin-bottom: 2rem;
+            position: relative;
+            z-index: 100;
         }
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.25rem;
+        }
+        .nav-brand {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: 0.05em;
+        }
+        /* hamburger button */
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .nav-toggle span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: var(--label);
+            border-radius: 2px;
+            transition: all 0.25s;
+        }
+        /* desktop links */
         .global-nav ul {
             display: flex;
             justify-content: center;
-            gap: 1.5rem;
+            gap: 1.25rem;
             list-style: none;
             flex-wrap: wrap;
+            padding: 0.5rem 1rem;
         }
         .global-nav a {
             color: var(--label);
             text-decoration: none;
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             font-weight: 600;
             transition: color 0.2s;
         }
-        .global-nav a:hover {
-            color: var(--accent);
+        .global-nav a:hover { color: var(--accent); }
+
+        /* mobile */
+        @media (max-width: 640px) {
+            .nav-toggle { display: flex; }
+            .nav-brand { display: block; }
+            .global-nav ul {
+                display: none;
+                flex-direction: column;
+                gap: 0;
+                padding: 0;
+                /* 覆蓋在頁面上方，不擠壓內容 */
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                z-index: 999;
+                background-color: var(--surface);
+                border-bottom: 1px solid var(--border);
+                box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            }
+            .global-nav ul.open { display: flex; }
+            .global-nav ul li a {
+                display: block;
+                padding: 0.75rem 1.25rem;
+                border-bottom: 1px solid var(--border);
+                font-size: 0.9rem;
+                white-space: normal;
+                word-break: break-word;
+            }
+            .global-nav ul li:last-child a { border-bottom: none; }
         }
     </style>
 </head>
 <body class="flex flex-col items-center min-h-screen">
 
- <div id="nav" class="w-full mb-12"></div>
-    <script>
-      fetch("./nav.html")
-        .then(r => r.text())
-        .then(html => document.getElementById("nav").innerHTML = html);
-    </script>
+<div id="nav"></div>
+<script>
+  // nav 連結備援（Claude 預覽 / 離線時使用）
+  const NAV_FALLBACK = `
+    <nav class="global-nav">
+      <ul>
+        <li><a href="./index.html">首頁</a></li>
+        <li><a href="./about.html">about me</a></li>
+        <li><a href="game_colorMemory.html">ColorMatch</a></li>
+        <li><a href="game_drawDog.html">點點記憶大挑戰</a></li>
+        <li><a href="./art19.html">19世紀藝術家</a></li>
+        <li><a href="./game1.html">小遊戲猜地名</a></li>
+        <li><a href="./game_color.html">明暗色彩分析</a></li>
+        <li><a href="./game_guessArt.html">小遊戲_猜藝術家</a></li>
+      </ul>
+    </nav>`;
+
+  function initNav(html) {
+    const navContainer = document.getElementById('nav');
+    navContainer.innerHTML = html;
+    const navEl = navContainer.querySelector('.global-nav');
+    const ul = navContainer.querySelector('ul');
+    if (!navEl || !ul) return;
+    // 插入漢堡按鈕
+    const inner = document.createElement('div');
+    inner.className = 'nav-inner';
+    inner.innerHTML = `
+      <span class="nav-brand">MENU</span>
+      <button class="nav-toggle" id="nav-toggle" aria-label="開啟選單">
+        <span></span><span></span><span></span>
+      </button>`;
+    navEl.insertBefore(inner, ul);
+    document.getElementById('nav-toggle').addEventListener('click', () => {
+      ul.classList.toggle('open');
+    });
+  }
+
+  fetch("./nav.html")
+    .then(r => { if (!r.ok) throw new Error(); return r.text(); })
+    .then(html => initNav(html))
+    .catch(() => initNav(NAV_FALLBACK));
+</script>
 
     <div id="game-container" class="w-full max-w-2xl text-center px-4 py-8">
 
         <!-- 頂部資訊 -->
-        <div class="flex justify-between items-center mb-6 px-4">
-            <h1 class="text-2xl font-black tracking-tighter" style="color:var(--text)"><span style="color:var(--accent)">點點記憶大挑戰</span></h1>
+        <div class="flex justify-between items-center mb-6 px-2 gap-2 flex-wrap">
+            <h1 class="text-xl sm:text-2xl font-black tracking-tighter" style="color:var(--text)"><span style="color:var(--accent)">點點記憶大挑戰</span></h1>
             <div id="progress-tag" class="hidden px-4 py-1 rounded-full text-xs font-mono border"
                  style="background:var(--surface); color:var(--accent); border-color:var(--border)">
                 ROUND: <span id="current-round">1</span>/5
