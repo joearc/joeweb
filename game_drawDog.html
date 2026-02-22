@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drawing Dot - 記憶點位挑戰</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+        :root {
+            --bg:        #1a1612;
+            --surface:   #231e19;
+            --border:    #3a3028;
+            --muted:     #6b5e4e;
+            --label:     #9e8c78;
+            --text:      #e8ddd0;
+            --accent:    #c4a882;
+            --accent-dk: #a0845e;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+        }
+
+        #canvas-area {
+            position: relative;
+            cursor: crosshair;
+            user-select: none;
+        }
+        #canvas-area.no-cursor {
+            pointer-events: none;
+        }
+        body.hide-cursor,
+        body.hide-cursor * {
+            cursor: none !important;
+        }
+
+        .dot-answer {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .dot-target {
+            background: #4f8ef7;
+            box-shadow: 0 0 0 3px rgba(79,142,247,0.35);
+        }
+
+        .dot-user {
+            background: var(--accent);
+            box-shadow: 0 0 0 3px rgba(196,168,130,0.35);
+            pointer-events: all;
+            cursor: pointer;
+        }
+
+        .dot-hit {
+            background: #4ade80;
+            box-shadow: 0 0 0 4px rgba(74,222,128,0.35);
+        }
+
+        .dot-miss {
+            background: #f87171;
+            box-shadow: 0 0 0 4px rgba(248,113,113,0.35);
+        }
+
+        #countdown-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.05);
+            border-radius: 1.5rem;
+            pointer-events: none;
+        }
+
+        #countdown-num {
+            font-size: 6rem;
+            font-weight: 900;
+            color: var(--accent);
+            text-shadow: 0 4px 24px rgba(196,168,130,0.5);
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.9); }
+        }
+
+        .hit-line {
+            position: absolute;
+            height: 2px;
+            background: rgba(74,222,128,0.5);
+            pointer-events: none;
+            transform-origin: left center;
+        }
+        .global-nav {
+            width: 100%;
+            background-color: var(--surface);
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+        .global-nav ul {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+        .global-nav a {
+            color: var(--label);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .global-nav a:hover {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center min-h-screen">
+
+ <div id="nav" class="w-full mb-12"></div>
+    <script>
+      fetch("./nav.html")
+        .then(r => r.text())
+        .then(html => document.getElementById("nav").innerHTML = html);
+    </script>
+
+    <div id="game-container" class="w-full max-w-2xl text-center px-4 py-8">
+
+        <!-- 頂部資訊 -->
+        <div class="flex justify-between items-center mb-6 px-4">
+            <h1 class="text-2xl font-black tracking-tighter" style="color:var(--text)"><span style="color:var(--accent)">點點記憶</span></h1>
+            <div id="progress-tag" class="hidden px-4 py-1 rounded-full text-xs font-mono border"
+                 style="background:var(--surface); color:var(--accent); border-color:var(--border)">
+                ROUND: <span id="current-round">1</span>/5
+            </div>
+        </div>
+
+        <!-- 開始畫面 -->
+        <div id="start-screen" class="max-w-md mx-auto">
+            <div class="p-8 rounded-[2.5rem] mb-8 border"
+                 style="background:rgba(35,30,25,0.5); border-color:var(--border)">
+                <p class="leading-relaxed mb-4" style="color:var(--label)">
+                    記住畫面中 <span style="color:var(--text); font-weight:700">3個藍色圓點</span> 的位置，<br>
+                    倒數結束後靠<span style="color:var(--text); font-weight:700">記憶</span>點出它們的位置。
+                </p>
+                <p class="text-xs uppercase tracking-tighter" style="color:var(--muted)">一共五題 · 誤差越小得分越高</p>
+            </div>
+            <button onclick="initGame()" class="px-12 py-4 font-bold rounded-2xl transition-all active:scale-95"
+                    style="background:var(--accent-dk); color:var(--bg); box-shadow:0 8px 24px rgba(160,132,94,0.2)"
+                    onmouseover="this.style.background='var(--accent)'"
+                    onmouseout="this.style.background='var(--accent-dk)'">
+                開始挑戰
+            </button>
+        </div>
+
+        <!-- 遊戲區域 -->
+        <div id="play-area" class="hidden">
+            <!-- 狀態提示 -->
+            <div id="phase-label" class="mb-3 text-sm font-semibold tracking-widest uppercase"
+                 style="color:var(--muted)">記憶中...</div>
+
+            <!-- 畫布 -->
+            <div id="canvas-area" class="relative w-full mx-auto rounded-3xl shadow-2xl border"
+                 style="background:#ffffff; border-color:var(--border); aspect-ratio:4/3; max-height:400px;">
+                <div id="countdown-overlay" class="hidden">
+                    <span id="countdown-num">3</span>
+                </div>
+            </div>
+
+            <!-- 玩家點位數量提示 -->
+            <div id="dot-hint" class="hidden mt-4 text-sm" style="color:var(--label)">
+                已點 <span id="dot-count">0</span> / 3 個位置
+                <span id="remove-hint" class="text-xs ml-2" style="color:var(--muted)">(點擊圓點可移除)</span>
+            </div>
+
+            <!-- 確認按鈕 -->
+            <button id="submit-btn"
+                    class="hidden mt-4 w-full max-w-md mx-auto block py-4 font-bold rounded-2xl transition-all active:scale-95"
+                    style="background:var(--accent-dk); color:var(--bg); box-shadow:0 8px 24px rgba(160,132,94,0.18)"
+                    onmouseover="this.style.background='var(--accent)'"
+                    onmouseout="this.style.background='var(--accent-dk)'">
+                確認答案
+            </button>
+        </div>
+
+        <!-- 每一題反饋 -->
+        <div id="round-feedback" class="hidden space-y-4 max-w-md mx-auto">
+            <div class="p-6 rounded-3xl border"
+                 style="background:rgba(35,30,25,0.7); border-color:var(--border)">
+                <p class="text-xs uppercase tracking-widest mb-1" style="color:var(--muted)">本題得分</p>
+                <p id="round-score" class="text-5xl font-black" style="color:var(--text)">0</p>
+                <p id="round-detail" class="text-xs mt-2" style="color:var(--muted)"></p>
+            </div>
+            <button id="next-btn" class="w-full py-4 font-bold rounded-2xl transition-all border"
+                    style="background:var(--surface); color:var(--text); border-color:var(--border)"
+                    onmouseover="this.style.background='var(--border)'"
+                    onmouseout="this.style.background='var(--surface)'">
+                下一題
+            </button>
+        </div>
+
+        <!-- 結算畫面 -->
+        <div id="final-screen" class="hidden space-y-6 max-w-md mx-auto">
+            <div class="p-10 rounded-[3rem] shadow-2xl"
+                 style="background: linear-gradient(135deg, #3d2e1e 0%, #2a1f12 100%); border: 1px solid var(--accent-dk)">
+                <p class="text-sm font-semibold uppercase tracking-widest mb-2" style="color:var(--label)">挑戰結束</p>
+                <h2 id="total-score" class="text-8xl font-black mb-2" style="color:var(--accent)">0</h2>
+                <p id="average-text" class="text-sm" style="color:var(--muted)">平均得分 0</p>
+                <div class="mt-6 pt-5 border-t" style="border-color:var(--border)">
+                    <div id="ending-emoji" class="text-4xl mb-2"></div>
+                    <p id="ending-message" class="text-lg font-bold" style="color:var(--text)"></p>
+                </div>
+            </div>
+            <button onclick="initGame()" class="w-full py-4 font-bold rounded-2xl border transition-all"
+                    style="background:var(--surface); color:var(--text); border-color:var(--border)"
+                    onmouseover="this.style.background='var(--border)'"
+                    onmouseout="this.style.background='var(--surface)'">
+                再次挑戰
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // ==============================
+        // 🎭 結語設定（依分數低到高排列，共5段）
+        // 每段：{ minScore, message, emoji }
+        // 總分上限 = 500（5題 × 100分）
+        // ==============================
+        const ENDING_MESSAGES = [
+            { minScore: 0,   emoji: '👁️', message: '你的眼睛要去檢查一下了吧？' },
+            { minScore: 100, emoji: '🖱️', message: '你的滑鼠壞了嗎？還是手在抖？' },
+            { minScore: 200, emoji: '🌿', message: '建議你開始吃銀杏，對記憶力有幫助。' },
+            { minScore: 320, emoji: '🧠', message: '還不錯嘛，腦子還沒生鏽！' },
+            { minScore: 420, emoji: '🦸', message: '你是超人！這記憶力根本外掛！' },
+        ];
+        // ==============================
+
+        const TOTAL_ROUNDS = 5;
+        const NUM_DOTS = 3;
+        const HIT_RADIUS = 40; // px threshold for "hit"
+        const MAX_SCORE_PER_DOT = 100 / NUM_DOTS;
+
+        let currentRound = 0;
+        let totalScore = 0;
+        let targetDots = []; // [{x, y}] as percentage of canvas
+        let userDots = [];
+        let phase = 'idle'; // 'memorize' | 'countdown' | 'input' | 'result'
+
+        const startScreen = document.getElementById('start-screen');
+        const playArea = document.getElementById('play-area');
+        const roundFeedback = document.getElementById('round-feedback');
+        const finalScreen = document.getElementById('final-screen');
+        const progressTag = document.getElementById('progress-tag');
+        const canvasArea = document.getElementById('canvas-area');
+        const countdownOverlay = document.getElementById('countdown-overlay');
+        const countdownNum = document.getElementById('countdown-num');
+        const submitBtn = document.getElementById('submit-btn');
+        const phaseLabel = document.getElementById('phase-label');
+        const dotHint = document.getElementById('dot-hint');
+        const dotCountEl = document.getElementById('dot-count');
+
+        function initGame() {
+            currentRound = 0;
+            totalScore = 0;
+            startScreen.classList.add('hidden');
+            finalScreen.classList.add('hidden');
+            roundFeedback.classList.add('hidden');
+            playArea.classList.remove('hidden');
+            progressTag.classList.remove('hidden');
+            nextRound();
+        }
+
+        function nextRound() {
+            currentRound++;
+            if (currentRound > TOTAL_ROUNDS) {
+                showSummary();
+                return;
+            }
+            document.getElementById('current-round').innerText = currentRound;
+            roundFeedback.classList.add('hidden');
+            submitBtn.classList.add('hidden');
+            dotHint.classList.add('hidden');
+
+            clearDots();
+            generateTargetDots();
+            startMemorize();
+        }
+
+        function generateTargetDots() {
+            targetDots = [];
+            const margin = 10; // percent margin from edge
+            for (let i = 0; i < NUM_DOTS; i++) {
+                let attempt, overlap;
+                do {
+                    attempt = {
+                        x: margin + Math.random() * (100 - margin * 2),
+                        y: margin + Math.random() * (100 - margin * 2)
+                    };
+                    overlap = targetDots.some(d => dist(d, attempt) < 18);
+                } while (overlap);
+                targetDots.push(attempt);
+            }
+        }
+
+        function clearDots() {
+            // remove all dot elements
+            canvasArea.querySelectorAll('.dot-answer').forEach(d => d.remove());
+            canvasArea.querySelectorAll('.hit-line').forEach(d => d.remove());
+            userDots = [];
+        }
+
+        function startMemorize() {
+            phase = 'memorize';
+            canvasArea.classList.add('no-cursor');
+            document.body.classList.add('hide-cursor');
+            phaseLabel.textContent = '記住圓點位置...';
+            phaseLabel.style.color = '#4f8ef7';
+
+            // Show target dots
+            targetDots.forEach(dot => {
+                const el = createDotEl(dot.x, dot.y, 'dot-target');
+                canvasArea.appendChild(el);
+            });
+
+            // Immediately show countdown on top of dots
+            countdownOverlay.classList.remove('hidden');
+            canvasArea.classList.add('no-cursor');
+            let n = 3;
+            countdownNum.textContent = n;
+
+            let cd = setInterval(() => {
+                n--;
+                if (n <= 0) {
+                    clearInterval(cd);
+                    countdownNum.textContent = '';
+                    countdownOverlay.classList.add('hidden');
+                    canvasArea.querySelectorAll('.dot-target').forEach(d => d.remove());
+                    startInput();
+                } else {
+                    countdownNum.textContent = n;
+                }
+            }, 1000);
+        }
+
+        function startInput() {
+            phase = 'input';
+            phaseLabel.textContent = '點擊畫布標記位置！';
+            phaseLabel.style.color = 'var(--label)';
+            canvasArea.classList.remove('no-cursor');
+            document.body.classList.remove('hide-cursor');
+            canvasArea.style.cursor = 'crosshair';
+            dotHint.classList.remove('hidden');
+            updateDotCount();
+        }
+
+        function createDotEl(xPct, yPct, cls) {
+            const el = document.createElement('div');
+            el.className = `dot-answer ${cls}`;
+            el.style.left = xPct + '%';
+            el.style.top = yPct + '%';
+            return el;
+        }
+
+        canvasArea.addEventListener('click', (e) => {
+            if (phase !== 'input') return;
+            if (userDots.length >= NUM_DOTS) return;
+
+            const rect = canvasArea.getBoundingClientRect();
+            const xPct = ((e.clientX - rect.left) / rect.width) * 100;
+            const yPct = ((e.clientY - rect.top) / rect.height) * 100;
+
+            const dotObj = { x: xPct, y: yPct };
+            const el = createDotEl(xPct, yPct, 'dot-user');
+            el.dataset.index = userDots.length;
+            el.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                removeUserDot(parseInt(el.dataset.index));
+            });
+            canvasArea.appendChild(el);
+            userDots.push({ x: xPct, y: yPct, el });
+            updateDotCount();
+
+            if (userDots.length === NUM_DOTS) {
+                submitBtn.classList.remove('hidden');
+            }
+        });
+
+        function removeUserDot(index) {
+            if (phase !== 'input') return;
+            const dot = userDots[index];
+            if (dot && dot.el) dot.el.remove();
+            userDots.splice(index, 1);
+            // re-index
+            userDots.forEach((d, i) => { if (d.el) d.el.dataset.index = i; });
+            updateDotCount();
+            if (userDots.length < NUM_DOTS) {
+                submitBtn.classList.add('hidden');
+            }
+        }
+
+        function updateDotCount() {
+            dotCountEl.textContent = userDots.length;
+        }
+
+        submitBtn.addEventListener('click', checkAnswer);
+
+        function dist(a, b) {
+            return Math.hypot(a.x - b.x, a.y - b.y);
+        }
+
+        function pctToCanvas(pct) {
+            const rect = canvasArea.getBoundingClientRect();
+            return { px: pct.x / 100 * rect.width, py: pct.y / 100 * rect.height };
+        }
+
+        function checkAnswer() {
+            phase = 'result';
+            canvasArea.style.cursor = 'default';
+            submitBtn.classList.add('hidden');
+            dotHint.classList.add('hidden');
+            phaseLabel.textContent = '結果';
+
+            // Show target dots again
+            targetDots.forEach(dot => {
+                const el = createDotEl(dot.x, dot.y, 'dot-target');
+                canvasArea.appendChild(el);
+            });
+
+            // Greedy matching: assign each user dot to nearest unmatched target
+            const usedTargets = new Set();
+            const pairs = [];
+
+            userDots.forEach(u => {
+                let bestTarget = null, bestDist = Infinity;
+                targetDots.forEach((t, ti) => {
+                    if (usedTargets.has(ti)) return;
+                    const d = dist(u, t);
+                    if (d < bestDist) { bestDist = d; bestTarget = ti; }
+                });
+                usedTargets.add(bestTarget);
+                pairs.push({ user: u, target: targetDots[bestTarget], d: bestDist });
+            });
+
+            const rect = canvasArea.getBoundingClientRect();
+            let roundScore = 0;
+
+            pairs.forEach(pair => {
+                const pxDist = dist(
+                    { x: pair.user.x / 100 * rect.width, y: pair.user.y / 100 * rect.height },
+                    { x: pair.target.x / 100 * rect.width, y: pair.target.y / 100 * rect.height }
+                );
+                const hit = pxDist <= HIT_RADIUS;
+                // Score: full at 0px, 0 at HIT_RADIUS*2
+                const dotScore = Math.max(0, MAX_SCORE_PER_DOT * (1 - pxDist / (HIT_RADIUS * 2)));
+                roundScore += dotScore;
+
+                // Color user dot
+                pair.user.el.classList.remove('dot-user');
+                pair.user.el.classList.add(hit ? 'dot-hit' : 'dot-miss');
+            });
+
+            totalScore += roundScore;
+
+            setTimeout(() => {
+                document.getElementById('round-score').innerText = roundScore.toFixed(1);
+                const avgPx = pairs.reduce((s, p) => {
+                    const r = canvasArea.getBoundingClientRect();
+                    return s + dist({ x: p.user.x/100*r.width, y: p.user.y/100*r.height },
+                                    { x: p.target.x/100*r.width, y: p.target.y/100*r.height });
+                }, 0) / pairs.length;
+                document.getElementById('round-detail').innerText = `平均誤差 ${avgPx.toFixed(0)} px`;
+                roundFeedback.classList.remove('hidden');
+            }, 600);
+        }
+
+        document.getElementById('next-btn').addEventListener('click', () => {
+            clearDots();
+            nextRound();
+        });
+
+        function showSummary() {
+            playArea.classList.add('hidden');
+            progressTag.classList.add('hidden');
+            roundFeedback.classList.add('hidden');
+            finalScreen.classList.remove('hidden');
+            document.getElementById('total-score').innerText = totalScore.toFixed(0);
+            document.getElementById('average-text').innerText = `總平均得分 ${(totalScore / TOTAL_ROUNDS).toFixed(1)}`;
+
+            // 找對應結語
+            let ending = ENDING_MESSAGES[0];
+            for (const e of ENDING_MESSAGES) {
+                if (totalScore >= e.minScore) ending = e;
+            }
+            document.getElementById('ending-emoji').innerText = ending.emoji;
+            document.getElementById('ending-message').innerText = ending.message;
+        }
+    </script>
+</body>
+</html>
