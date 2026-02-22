@@ -250,7 +250,7 @@
             <div class="p-8 rounded-[2.5rem] mb-8 border"
                  style="background:rgba(35,30,25,0.5); border-color:var(--border)">
                 <p class="leading-relaxed mb-4" style="color:var(--label)">
-                    記住畫面中 <span style="color:var(--text); font-weight:700">3個藍色圓點</span> 的位置，<br>
+                    記住畫面中 <span style="color:var(--text); font-weight:700">4個藍色圓點</span> 的位置，<br>
                     倒數結束後靠<span style="color:var(--text); font-weight:700">記憶</span>點出它們的位置。
                 </p>
                 <p class="text-xs uppercase tracking-tighter" style="color:var(--muted)">一共五題 · 誤差越小得分越高</p>
@@ -279,7 +279,7 @@
 
             <!-- 玩家點位數量提示 -->
             <div id="dot-hint" class="hidden mt-4 text-sm" style="color:var(--label)">
-                已點 <span id="dot-count">0</span> / 3 個位置
+                已點 <span id="dot-count">0</span> / 4 個位置
                 <span id="remove-hint" class="text-xs ml-2" style="color:var(--muted)">(點擊圓點可移除)</span>
             </div>
 
@@ -349,7 +349,7 @@
         // ==============================
 
         const TOTAL_ROUNDS = 5;
-        const NUM_DOTS = 3;
+        const NUM_DOTS = 4;
         const HIT_RADIUS = 40; // px threshold for "hit"
         const MAX_SCORE_PER_DOT = 100 / NUM_DOTS;
 
