@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cherry Blossom Fractal - Bird Interaction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #0f172a, #1b1e3b);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        #ui-layer {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            pointer-events: auto;
+            z-index: 20;
+        }
+        .reset-button {
+            background: rgba(236, 72, 153, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(236, 72, 153, 0.4);
+            color: #ff99cc;
+            padding: 10px 28px;
+            border-radius: 99px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+        }
+        .reset-button:hover {
+            background: rgba(236, 72, 153, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.3);
+            border-color: rgba(236, 72, 153, 0.6);
+            color: #ffffff;
+        }
+        .instruction {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.2);
+            pointer-events: none;
+            text-align: center;
+            z-index: 10;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="ui-layer">
+        <button id="resetTree" class="reset-button">RESET</button>
+    </div>
+
+    <div class="instruction">
+        點擊樹枝使其掉落重生 | 鳥兒跟隨滑鼠飛行
+    </div>
+
+    <canvas id="treeCanvas"></canvas>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const treeCanvas = document.getElementById('treeCanvas');
+        const tCtx = treeCanvas.getContext('2d');
+
+        let width, height;
+        let petals = [];
+        let segments = [];
+        let fallingBranches = [];
+        let leafPoints = [];
+        let mouse = { x: -100, y: -100 };
+        let isGrowing = false;
+
+        // 鳥的狀態
+        const bird = {
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 2,
+            targetX: window.innerWidth / 2,
+            targetY: window.innerHeight / 2,
+            angle: 0,
+            wingFap: 0,
+            size: 15
+        };
+
+        const SETTINGS = {
+            growthSpeed: 0.1,
+            petalLimit: 800,
+            curveIntensity: 45,
+            complexity: 8, 
+            gravity: 0.18, 
+            airResistance: 0.99 
+        };
+
+        function resize() {
+            width = canvas.width = treeCanvas.width = window.innerWidth;
+            height = canvas.height = treeCanvas.height = window.innerHeight;
+            startNewTree();
+        }
+
+        window.addEventListener('resize', resize);
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+            bird.targetX = e.clientX;
+            bird.targetY = e.clientY;
+        });
+
+        window.addEventListener('mousedown', (e) => {
+            const clickX = e.clientX;
+            const clickY = e.clientY;
+            
+            for (let i = 0; i < segments.length; i++) {
+                const s = segments[i];
+                if (!s.done) continue;
+
+                const midX = (s.x1 + s.x2) / 2;
+                const midY = (s.y1 + s.y2) / 2;
+                const dist = Math.hypot(clickX - midX, clickY - midY);
+
+                if (dist < s.thick + 10) {
+                    pruneBranch(i);
+                    break;
+                }
+            }
+        });
+
+        function pruneBranch(index) {
+            const rootSegment = segments[index];
+            if (!rootSegment) return;
+
+            const toRemove = [];
+            const findChildren = (parent) => {
+                toRemove.push(parent);
+                segments.forEach(child => {
+                    if (child.parentId === parent.id) findChildren(child);
+                });
+            };
+            findChildren(rootSegment);
+
+            toRemove.forEach(s => {
+                fallingBranches.push({
+                    ...s,
+                    velY: Math.random() * 2,
+                    velX: (Math.random() - 0.5) * 2,
+                    rot: 0,
+                    rotVel: (Math.random() - 0.5) * 0.05,
+                    opacity: 1
+                });
+                
+                petals = petals.filter(p => {
+                    const d = Math.hypot(p.x - s.x2, p.y - s.y2);
+                    if (d < 20 && p.attached) {
+                        p.attached = false;
+                        p.velY = 1 + Math.random() * 2;
+                        return true; 
+                    }
+                    return true;
+                });
+            });
+
+            const idsToRemove = toRemove.map(r => r.id);
+            segments = segments.filter(s => !idsToRemove.includes(s.id));
+
+            isGrowing = true;
+            const nextLen = lenFromDepth(rootSegment.depth) * (0.8 + Math.random() * 0.3);
+            const angle = Math.atan2(rootSegment.y2 - rootSegment.y1, rootSegment.x2 - rootSegment.x1);
+            
+            pushBranch(
+                rootSegment.x1, 
+                rootSegment.y1, 
+                nextLen, 
+                angle + (Math.random() - 0.5) * 0.5, 
+                rootSegment.thick, 
+                rootSegment.depth, 
+                rootSegment.parentId
+            );
+
+            redrawStaticTree();
+        }
+
+        function redrawStaticTree() {
+            tCtx.clearRect(0, 0, width, height);
+            segments.forEach(s => {
+                if (s.done) {
+                    tCtx.beginPath();
+                    tCtx.moveTo(s.x1, s.y1);
+                    tCtx.quadraticCurveTo(s.cpX, s.cpY, s.x2, s.y2);
+                    tCtx.strokeStyle = `rgba(100, 85, 80, ${0.4 + s.depth / 12})`;
+                    tCtx.lineWidth = s.thick;
+                    tCtx.lineCap = 'round';
+                    tCtx.stroke();
+                }
+            });
+        }
+
+        class Petal {
+            constructor(x, y, isFalling = false) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 5 + 1.5;
+                this.weight = (this.size / 6.5) * 0.6 + 0.4; 
+                this.angle = Math.random() * Math.PI * 2;
+                this.spin = Math.random() * 0.08 - 0.04;
+                this.color = `rgba(${255}, ${195 + Math.random() * 45}, ${215 + Math.random() * 35}, ${Math.random() * 0.5 + 0.4})`;
+                this.velX = Math.random() * 2 - 1;
+                this.velY = 0;
+                this.attached = !isFalling;
+            }
+
+            update() {
+                if (this.attached) {
+                    const dx = bird.x - this.x; // 鳥也會驚落花瓣
+                    const dy = bird.y - this.y;
+                    if (Math.sqrt(dx*dx + dy*dy) < 30) {
+                        this.attached = false;
+                        this.velY = Math.random() * 1.5;
+                    }
+                    return;
+                }
+                this.velY += SETTINGS.gravity * this.weight;
+                this.velX *= SETTINGS.airResistance;
+                this.velX += Math.cos(Date.now() * 0.002 + this.y) * 0.03;
+                this.x += this.velX;
+                this.y += this.velY;
+                this.angle += this.spin;
+                if (this.y > height + 20) this.reset();
+            }
+
+            reset() {
+                if (leafPoints.length > 0) {
+                    const p = leafPoints[Math.floor(Math.random() * leafPoints.length)];
+                    this.x = p.x;
+                    this.y = p.y;
+                    this.velY = 0;
+                    this.attached = true;
+                    this.size = Math.random() * 5 + 1.5;
+                }
+            }
+
+            draw(targetCtx) {
+                targetCtx.save();
+                targetCtx.translate(this.x, this.y);
+                targetCtx.rotate(this.angle);
+                targetCtx.fillStyle = this.color;
+                targetCtx.beginPath();
+                targetCtx.moveTo(0, 0);
+                targetCtx.bezierCurveTo(this.size, -this.size, this.size*1.5, this.size, 0, this.size*1.5);
+                targetCtx.bezierCurveTo(-this.size*1.5, this.size, -this.size, -this.size, 0, 0);
+                targetCtx.fill();
+                targetCtx.restore();
+            }
+        }
+
+        function updateBird() {
+            // 平滑跟隨滑鼠 (Lerp)
+            const lerpFactor = 0.05;
+            const dx = bird.targetX - bird.x;
+            const dy = bird.targetY - bird.y;
+            
+            bird.x += dx * lerpFactor;
+            bird.y += dy * lerpFactor;
+
+            // 計算轉向角度
+            if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+                const targetAngle = Math.atan2(dy, dx);
+                // 角度平滑過渡
+                bird.angle += (targetAngle - bird.angle) * 0.1;
+            }
+
+            // 翅膀拍動
+            bird.wingFap = Math.sin(Date.now() * 0.015) * 0.8;
+        }
+
+        function drawBird(targetCtx) {
+            targetCtx.save();
+            targetCtx.translate(bird.x, bird.y);
+            targetCtx.rotate(bird.angle);
+
+            // 鳥身 (中心三角形)
+            targetCtx.fillStyle = "#f8fafc";
+            targetCtx.beginPath();
+            targetCtx.moveTo(bird.size, 0);
+            targetCtx.lineTo(-bird.size / 2, -bird.size / 2.5);
+            targetCtx.lineTo(-bird.size / 2, bird.size / 2.5);
+            targetCtx.fill();
+
+            // 翅膀 (兩側三角形)
+            targetCtx.fillStyle = "#cbd5e1";
+            // 上翅
+            targetCtx.beginPath();
+            targetCtx.moveTo(0, 0);
+            targetCtx.lineTo(-bird.size / 3, -bird.size * 1.2 * (0.5 + bird.wingFap));
+            targetCtx.lineTo(bird.size / 3, 0);
+            targetCtx.fill();
+            // 下翅
+            targetCtx.beginPath();
+            targetCtx.moveTo(0, 0);
+            targetCtx.lineTo(-bird.size / 3, bird.size * 1.2 * (0.5 + bird.wingFap));
+            targetCtx.lineTo(bird.size / 3, 0);
+            targetCtx.fill();
+
+            // 點睛
+            targetCtx.fillStyle = "#1e293b";
+            targetCtx.beginPath();
+            targetCtx.arc(bird.size * 0.5, -bird.size * 0.1, 1.5, 0, Math.PI * 2);
+            targetCtx.fill();
+
+            targetCtx.restore();
+        }
+
+        function startNewTree() {
+            tCtx.clearRect(0, 0, width, height);
+            petals = [];
+            segments = [];
+            fallingBranches = [];
+            leafPoints = [];
+            isGrowing = true;
+
+            const startX = width / 2;
+            const startY = height - 10;
+            const len = height * 0.22; 
+            const angle = -Math.PI / 2;
+            const thickness = 14;
+
+            pushBranch(startX, startY, len, angle, thickness, SETTINGS.complexity, null);
+        }
+
+        let segmentIdCounter = 0;
+        function pushBranch(x, y, len, angle, thick, depth, parentId) {
+            const curve = (Math.random() - 0.5) * (SETTINGS.curveIntensity / 50);
+            const x2 = x + Math.cos(angle + curve) * len;
+            const y2 = y + Math.sin(angle + curve) * len;
+
+            segments.push({
+                id: segmentIdCounter++,
+                parentId: parentId,
+                x1: x, y1: y, 
+                x2: x2, y2: y2, 
+                cpX: x + Math.cos(angle) * (len/2),
+                cpY: y + Math.sin(angle) * (len/2),
+                thick: thick, 
+                depth: depth,
+                progress: 0,
+                done: false
+            });
+        }
+
+        function spawnPetal(x, y) {
+            const p = new Petal(x, y);
+            petals.push(p);
+            if (petals.length > SETTINGS.petalLimit) petals.shift();
+        }
+
+        function updateGrowth() {
+            let activeFound = false;
+            for (let i = 0; i < segments.length; i++) {
+                let s = segments[i];
+                if (s.done) continue;
+
+                activeFound = true;
+                s.progress += SETTINGS.growthSpeed;
+                
+                if (s.progress >= 1) {
+                    s.progress = 1;
+                    s.done = true;
+                    redrawStaticTree();
+
+                    if (s.depth > 0) {
+                        const lengthMult = s.depth === 1 ? (0.9 + Math.random() * 0.3) : (0.75 + Math.random() * 0.25);
+                        const nextLen = lenFromDepth(s.depth) * lengthMult;
+                        const nextThick = s.thick * 0.7;
+                        const baseAngle = Math.atan2(s.y2 - s.y1, s.x2 - s.x1);
+                        
+                        pushBranch(s.x2, s.y2, nextLen, baseAngle + 0.4 + Math.random() * 0.5, nextThick, s.depth - 1, s.id);
+                        pushBranch(s.x2, s.y2, nextLen, baseAngle - 0.4 - Math.random() * 0.5, nextThick, s.depth - 1, s.id);
+                    } else {
+                        leafPoints.push({x: s.x2, y: s.y2});
+                        for(let k=0; k<8; k++) spawnPetal(s.x2 + (Math.random()-0.5)*15, s.y2 + (Math.random()-0.5)*15);
+                    }
+                }
+            }
+            if (!activeFound) isGrowing = false;
+        }
+
+        function lenFromDepth(depth) {
+            return (height * 0.2) * Math.pow(0.82, (SETTINGS.complexity - depth));
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            if (isGrowing) updateGrowth();
+
+            // 繪製正在生長的樹枝
+            segments.forEach(s => {
+                if (!s.done && s.progress > 0) {
+                    const curX = s.x1 + (s.x2 - s.x1) * s.progress;
+                    const curY = s.y1 + (s.y2 - s.y1) * s.progress;
+                    ctx.beginPath();
+                    ctx.moveTo(s.x1, s.y1);
+                    ctx.lineTo(curX, curY);
+                    ctx.strokeStyle = `rgba(110, 95, 90, ${0.5 + s.depth / 10})`;
+                    ctx.lineWidth = s.thick;
+                    ctx.lineCap = 'round';
+                    ctx.stroke();
+                }
+            });
+
+            // 繪製掉落中的樹枝
+            for (let i = fallingBranches.length - 1; i >= 0; i--) {
+                let fb = fallingBranches[i];
+                fb.velY += SETTINGS.gravity;
+                fb.y1 += fb.velY; fb.y2 += fb.velY;
+                fb.x1 += fb.velX; fb.x2 += fb.velX;
+                fb.rot += fb.rotVel;
+                fb.opacity -= 0.01;
+
+                if (fb.opacity <= 0) {
+                    fallingBranches.splice(i, 1);
+                    continue;
+                }
+
+                ctx.save();
+                ctx.globalAlpha = fb.opacity;
+                ctx.translate((fb.x1 + fb.x2)/2, (fb.y1 + fb.y2)/2);
+                ctx.rotate(fb.rot);
+                ctx.beginPath();
+                ctx.moveTo(fb.x1 - (fb.x1 + fb.x2)/2, fb.y1 - (fb.y1 + fb.y2)/2);
+                ctx.lineTo(fb.x2 - (fb.x1 + fb.x2)/2, fb.y2 - (fb.y1 + fb.y2)/2);
+                ctx.strokeStyle = `rgba(100, 85, 80, 0.6)`;
+                ctx.lineWidth = fb.thick;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            // 更新與繪製鳥
+            updateBird();
+            drawBird(ctx);
+
+            petals.forEach(p => {
+                p.update();
+                p.draw(ctx);
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        document.getElementById('resetTree').onclick = startNewTree;
+        resize();
+        animate();
+    </script>
+</body>
+</html>
