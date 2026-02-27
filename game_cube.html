@@ -51,10 +51,11 @@
 
         #canvas-container {
             position: relative;
-            width: 90vw;
-            height: 90vw;
-            max-width: 360px;
-            max-height: 360px;
+            /* 深綠色色塊變大約 10% */
+            width: 95vw;
+            height: 95vw;
+            max-width: 420px;
+            max-height: 420px;
             margin: 1.5rem auto;
             border-radius: 2rem;
             background-color: var(--canvas-bg);
@@ -88,16 +89,11 @@
             align-items: center;
             justify-content: center;
             z-index: 20;
-            pointer-events: auto;
             transition: all 0.2s;
         }
         #undoBtn:disabled {
             opacity: 0;
             pointer-events: none;
-        }
-
-        .ui-ignore {
-            pointer-events: none !important;
         }
 
         .countdown {
@@ -107,12 +103,13 @@
             opacity: 0.8;
             font-weight: 800;
             z-index: 5;
+            pointer-events: none;
             text-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
 
         .controls-area {
             width: 100%;
-            max-width: 360px;
+            max-width: 380px;
             margin: 0 auto;
             padding: 0 1rem;
             text-align: center;
@@ -128,6 +125,7 @@
             transition: all 0.2s;
             text-transform: uppercase;
             letter-spacing: 0.1em;
+            cursor: pointer;
         }
         .btn-main:active {
             transform: scale(0.98);
@@ -136,8 +134,9 @@
     </style>
 </head>
 <body class="flex flex-col items-center min-h-screen">
+   
 <div id="nav"></div>
-  <script>
+<script>
   // nav 連結備援（Claude 預覽 / 離線時使用）
   const NAV_FALLBACK = `
     <nav class="global-nav">
@@ -178,46 +177,35 @@
     .then(html => initNav(html))
     .catch(() => initNav(NAV_FALLBACK));
 </script>
+
     <div class="w-full max-w-md px-4 py-4 flex flex-col items-center">
-        <!-- 頂部資訊 -->
         <header class="w-full flex justify-between items-end mb-2 px-2">
             <div>
                 <h1 class="text-xl font-black tracking-tight">小方塊<span class="text-[#c4a882]">大挑戰</span></h1>
-                <!-- 修改處：更新靜態文字並使其持續顯示 -->
                 <p id="status-text" class="text-[10px] uppercase font-bold tracking-widest text-[#9e8c78]">方塊畫的好.畫畫沒煩惱</p>
             </div>
             <div id="round-display" class="px-3 py-1 rounded-full text-[10px] border border-[#3a3028] bg-[#231e19] text-[#c4a882] font-mono">ROUND 1 / 5</div>
         </header>
 
-        <!-- 畫布區域 -->
         <div id="canvas-container">
             <canvas id="gameCanvas"></canvas>
-            
-            <button id="undoBtn" class="hidden" disabled title="復原上一筆">
+            <button id="undoBtn" class="hidden" disabled>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h10a8 8 0 0 1 8 8v2"></path><polyline points="9 14 3 10 9 6"></polyline></svg>
             </button>
-            
-            <div class="absolute inset-0 flex items-center justify-center ui-ignore">
-                <div id="timer-text" class="countdown ui-ignore"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <div id="timer-text" class="countdown"></div>
             </div>
         </div>
 
-        <!-- 外部控制區域：文字與按鈕 -->
         <div class="controls-area space-y-4">
             <div id="instruction-text" class="text-sm font-bold text-[#c4a882] tracking-wide h-6">
-                憑記憶畫出出現的方塊
+                準備好開始挑戰了嗎？
             </div>
-            
             <div id="feedback" class="text-xs font-bold text-[#a0845e] h-4"></div>
 
             <div class="pt-2">
-                <!-- 開始按鈕 -->
-                <button id="realStartBtn" class="btn-main">
-                    開始挑戰
-                </button>
-
-                <!-- 提交與下一題 -->
-                <div class="flex gap-3">
+                <button id="realStartBtn" class="btn-main">開始挑戰</button>
+                <div class="flex flex-col gap-3">
                     <button id="submitBtn" class="hidden btn-main">確認送出</button>
                     <button id="nextBtn" class="hidden w-full py-4 bg-[#231e19] text-[#e8ddd0] border border-[#3a3028] rounded-2xl text-xs font-bold uppercase tracking-widest">下一題</button>
                 </div>
@@ -245,7 +233,6 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const timerText = document.getElementById('timer-text');
-        const statusText = document.getElementById('status-text');
         const instructionText = document.getElementById('instruction-text');
         const feedback = document.getElementById('feedback');
         const undoBtn = document.getElementById('undoBtn');
@@ -263,15 +250,41 @@
         let gameState = 'IDLE'; 
         let history = []; 
 
+        const cubePoints = [
+            [-1, -1,  1], [ 1, -1,  1], [ 1,  1,  1], [-1,  1,  1],
+            [-1, -1, -1], [ 1, -1, -1], [ 1,  1, -1], [-1,  1, -1]
+        ];
+        const cubeEdges = [
+            [0,1], [1,2], [2,3], [3,0], [4,5], [5,6], [6,7], [7,4], [0,4], [1,5], [2,6], [3,7]
+        ];
+
         function initCanvasSize() {
             const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width;
-            canvas.height = rect.height;
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
             render();
         }
 
+        function project(points3d, rotateX, rotateY, rotateZ, scale, cx, cy) {
+            return points3d.map(p => {
+                let x = p[0], y = p[1], z = p[2];
+                let x1 = x * Math.cos(rotateY) - z * Math.sin(rotateY);
+                let z1 = x * Math.sin(rotateY) + z * Math.cos(rotateY);
+                let y2 = y * Math.cos(rotateX) - z1 * Math.sin(rotateX);
+                let z2 = y * Math.sin(rotateX) + z1 * Math.cos(rotateX);
+                let x3 = x1 * Math.cos(rotateZ) - y2 * Math.sin(rotateZ);
+                let y3 = x1 * Math.sin(rotateZ) + y2 * Math.cos(rotateZ);
+                let fov = 500;
+                let factor = fov / (fov + z2);
+                return { x: cx + x3 * factor * scale, y: cy + y3 * factor * scale };
+            });
+        }
+
         function render() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const w = canvas.width / window.devicePixelRatio;
+            const h = canvas.height / window.devicePixelRatio;
+            ctx.clearRect(0, 0, w, h);
             
             if (targetBox && (gameState === 'OBSERVE' || gameState === 'REVIEW')) {
                 ctx.save();
@@ -279,11 +292,10 @@
                 ctx.lineWidth = gameState === 'REVIEW' ? 2 : 3;
                 if (gameState === 'REVIEW') ctx.setLineDash([5, 5]);
                 
-                const edges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
-                edges.forEach(e => {
+                targetBox.edges.forEach(e => {
                     ctx.beginPath();
-                    ctx.moveTo(targetBox.points[e[0]].x, targetBox.points[e[0]].y);
-                    ctx.lineTo(targetBox.points[e[1]].x, targetBox.points[e[1]].y);
+                    ctx.moveTo(targetBox.pts[e[0]].x, targetBox.pts[e[0]].y);
+                    ctx.lineTo(targetBox.pts[e[1]].x, targetBox.pts[e[1]].y);
                     ctx.stroke();
                 });
                 ctx.restore();
@@ -292,8 +304,6 @@
             ctx.strokeStyle = '#e8ddd0';
             ctx.lineWidth = 4;
             ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            
             userLines.forEach(l => {
                 ctx.beginPath(); ctx.moveTo(l.x1, l.y1); ctx.lineTo(l.x2, l.y2); ctx.stroke();
             });
@@ -311,26 +321,21 @@
         function startRound() {
             userLines = []; history = []; currentLine = null;
             gameState = 'OBSERVE';
-            initCanvasSize();
-            
-            const size = canvas.width * (0.3 + Math.random() * 0.1);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const pts = [];
-            const angle = Math.random() * Math.PI * 2;
-            const p = 0.35;
-
-            for(let i=0; i<4; i++){
-                const a = angle + i * Math.PI/2;
-                pts.push({ x: cx + Math.cos(a)*size/1.5, y: cy + Math.sin(a)*size/1.5 });
-            }
-            for(let i=0; i<4; i++){
-                pts.push({ x: pts[i].x + size*p, y: pts[i].y - size*p });
-            }
-            targetBox = { points: pts, size };
-            
-            // 修改處：移除動態更改 statusText 的代碼，讓它保持靜態
+            feedback.innerText = "";
             instructionText.innerText = "記住方塊的位置與形狀";
+            
+            const w = canvas.width / window.devicePixelRatio;
+            const h = canvas.height / window.devicePixelRatio;
+            const rx = (Math.random() - 0.5) * 1.5;
+            const ry = (Math.random() - 0.5) * 1.5;
+            const rz = (Math.random() - 0.5) * 1.5;
+            const scale = w * 0.25; 
+
+            targetBox = { 
+                pts: project(cubePoints, rx, ry, rz, scale, w/2, h/2), 
+                edges: cubeEdges 
+            };
+            
             let count = 3;
             timerText.innerText = count;
             render();
@@ -343,7 +348,7 @@
                     clearInterval(timer);
                     timerText.innerText = "";
                     gameState = 'DRAW';
-                    instructionText.innerText = "憑記憶畫出剛剛的方塊";
+                    instructionText.innerText = "憑記憶畫出剛剛的方塊 ";
                     undoBtn.disabled = false;
                     submitBtn.classList.remove('hidden');
                     render();
@@ -355,10 +360,7 @@
             const rect = canvas.getBoundingClientRect();
             const clientX = (e.touches ? e.touches[0].clientX : e.clientX);
             const clientY = (e.touches ? e.touches[0].clientY : e.clientY);
-            return {
-                x: (clientX - rect.left) * (canvas.width / rect.width),
-                y: (clientY - rect.top) * (canvas.height / rect.height)
-            };
+            return { x: clientX - rect.left, y: clientY - rect.top };
         }
 
         const handleStart = (e) => {
@@ -381,8 +383,8 @@
             if(!isDrawing) return;
             isDrawing = false;
             if(currentLine) {
-                const dist = Math.hypot(currentLine.x1 - currentLine.x2, currentLine.y1 - currentLine.y2);
-                if(dist > 5) {
+                const d = Math.hypot(currentLine.x1 - currentLine.x2, currentLine.y1 - currentLine.y2);
+                if(d > 15) {
                     history.push([...userLines]);
                     userLines.push(currentLine);
                 }
@@ -398,7 +400,7 @@
         window.addEventListener('touchmove', (e) => { e.preventDefault(); handleMove(e); }, {passive: false});
         window.addEventListener('touchend', handleEnd);
 
-        undoBtn.onclick = (e) => {
+        undoBtn.onclick = () => {
             if(history.length > 0) {
                 userLines = history.pop();
                 render();
@@ -406,21 +408,18 @@
         };
 
         submitBtn.onclick = () => {
-            if(userLines.length === 0) return;
+            if(userLines.length < 3) return;
             gameState = 'REVIEW';
             submitBtn.classList.add('hidden');
             undoBtn.disabled = true;
             
             const score = calculateScore();
             totalScore += score;
-            scoreDisplay.innerText = `TOTAL SCORE: ${Math.round(totalScore)}`;
+            scoreDisplay.innerText = `TOTAL SCORE: ${totalScore}`;
             feedback.innerText = `本回合得分：${score}`;
             
-            if(currentRound < 5) {
-                nextBtn.classList.remove('hidden');
-            } else {
-                setTimeout(showFinal, 1000);
-            }
+            if(currentRound < 5) nextBtn.classList.remove('hidden');
+            else setTimeout(showFinal, 1200);
             render();
         };
 
@@ -433,24 +432,58 @@
 
         function calculateScore() {
             if(!targetBox || userLines.length === 0) return 0;
-            let matchCount = 0;
-            const targetPoints = targetBox.points;
-            
-            userLines.forEach(line => {
-                let p1Match = targetPoints.some(tp => Math.hypot(line.x1 - tp.x, line.y1 - tp.y) < 30);
-                let p2Match = targetPoints.some(tp => Math.hypot(line.x2 - tp.x, line.y2 - tp.y) < 30);
-                if(p1Match && p2Match) matchCount++;
+            const targetEdges = targetBox.edges.map(e => ({ p1: targetBox.pts[e[0]], p2: targetBox.pts[e[1]] }));
+            let totalAcc = 0, matchedCount = 0, usedUserLines = new Set();
+
+            targetEdges.forEach(te => {
+                let bestMatchScore = 0, bestIdx = -1;
+                userLines.forEach((ul, uIdx) => {
+                    if (usedUserLines.has(uIdx)) return;
+                    const d1 = Math.hypot(ul.x1 - te.p1.x, ul.y1 - te.p1.y) + Math.hypot(ul.x2 - te.p2.x, ul.y2 - te.p2.y);
+                    const d2 = Math.hypot(ul.x1 - te.p2.x, ul.y1 - te.p2.y) + Math.hypot(ul.x2 - te.p1.x, ul.y2 - te.p1.y);
+                    const minD = Math.min(d1, d2);
+                    const angleT = Math.atan2(te.p2.y - te.p1.y, te.p2.x - te.p1.x);
+                    const angleU = Math.atan2(ul.y2 - ul.y1, ul.x2 - ul.x1);
+                    let angleDiff = Math.abs(angleT - angleU) % Math.PI;
+                    if (angleDiff > Math.PI / 2) angleDiff = Math.PI - angleDiff;
+
+                    if (minD < 100 && angleDiff < 0.5) {
+                        const distScore = Math.max(0, 1 - minD / 100);
+                        const angleScore = Math.max(0, 1 - angleDiff / 0.5);
+                        const currentScore = (distScore * 0.6 + angleScore * 0.4) * 100;
+                        if (currentScore > bestMatchScore) { bestMatchScore = currentScore; bestIdx = uIdx; }
+                    }
+                });
+                if (bestMatchScore > 40) { totalAcc += bestMatchScore; matchedCount++; usedUserLines.add(bestIdx); }
             });
 
-            let final = Math.min(100, Math.round((matchCount / 12) * 100) + 20);
-            if(userLines.length < 8) final = Math.round(final * 0.5);
-            return final;
+            const coverage = (matchedCount / 12);
+            const precision = matchedCount > 0 ? (totalAcc / matchedCount) / 100 : 0;
+            const clutterPenalty = Math.max(0.6, 1 - Math.max(0, userLines.length - 15) * 0.04);
+            return Math.min(100, Math.round((coverage * 80 + precision * 20) * clutterPenalty));
         }
 
+        // 修改後的 showFinal：包含 5 個階梯式評價
         function showFinal() {
             document.getElementById('resultModal').style.display = 'flex';
-            document.getElementById('finalScore').innerText = Math.round(totalScore);
-            document.getElementById('finalComment').innerText = totalScore > 400 ? "你的空間記憶力簡直是天才級別！" : "很棒的嘗試，多練習幾次會更強！";
+            document.getElementById('finalScore').innerText = totalScore;
+            
+            let comment = "";
+            
+            // 這裡可以自由修改分數門檻與對應文字
+            if (totalScore >= 450) {
+                comment = "神一般的空間感！大腦內建3D建模！";
+            } else if (totalScore >= 350) {
+                comment = "記憶力與透視感都相當驚人。";
+            } else if (totalScore >= 250) {
+                comment = "表現不錯，方塊畫得很紮實";
+            } else if (totalScore >= 150) {
+                comment = "進步空間很大，多練習觀察方塊！";
+            } else {
+                comment = "你需要多多練習！";
+            }
+            
+            document.getElementById('finalComment').innerText = comment;
         }
 
         window.onresize = initCanvasSize;
