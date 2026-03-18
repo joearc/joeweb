@@ -142,23 +142,11 @@
   .pro::before { content: '+'; font-family: 'DM Mono', monospace; font-weight: 700; font-size: 0.95rem; flex-shrink: 0; }
   .con::before { content: '−'; font-family: 'DM Mono', monospace; font-weight: 700; font-size: 0.95rem; flex-shrink: 0; }
 
-  /* Easy = mama: green / amber */
-  .easy .pro { background: #e8f5e9; color: #1b5e20; }
-  .easy .pro::before { color: #2e7d32; }
-  .easy .con { background: #fff8e1; color: #7f4c00; }
-  .easy .con::before { color: #e65100; }
-
-  /* Normal = passerby: blue / rose */
-  .normal .pro { background: #e3f2fd; color: #0d3c61; }
-  .normal .pro::before { color: #1565c0; }
-  .normal .con { background: #fce4ec; color: #6a1428; }
-  .normal .con::before { color: #c62828; }
-
-  /* Hard = schizo: purple / deep orange */
-  .hard .pro { background: #f3e5f5; color: #4a148c; }
-  .hard .pro::before { color: #7b1fa2; }
-  .hard .con { background: #fbe9e7; color: #7b241c; }
-  .hard .con::before { color: #bf360c; }
+  /* 統一底色：優點黃、缺點淺紅 */
+  .pro { background: #fffde7; color: #5d4000; }
+  .pro::before { color: #f9a825; }
+  .con { background: #fdecea; color: #7b1d1d; }
+  .con::before { color: #c62828; }
 
   .item-list { list-style: none; }
   .item-list li { font-size: 0.87rem; line-height: 1.65; padding: 0.3rem 0; border-bottom: 1px solid var(--border); display: flex; gap: 0.6rem; }
@@ -193,7 +181,7 @@
 <body>
 
 <header>
-  <div class="logo">JOE<span>畫畫診斷室</span></div>
+  <div class="logo">JOE<span>畫作診斷室</span></div>
 </header>
 
 <div class="key-bar">
