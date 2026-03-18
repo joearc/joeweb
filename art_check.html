@@ -6,7 +6,7 @@
 <title>畫作診斷室</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=DM+Mono:wght@400;500&display=swap');
- 
+
   :root {
     --ink: #1a1410;
     --paper: #f5f0e8;
@@ -15,26 +15,94 @@
     --muted: #7a6f62;
     --border: #d4c9b8;
     --card: #faf7f2;
+    --green: #2d6a4f;
   }
- 
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: var(--paper); color: var(--ink); font-family: 'Noto Serif TC', serif; min-height: 100vh; }
- 
+
   header {
     border-bottom: 3px double var(--ink);
-    padding: 2rem 3rem 1.5rem;
-    display: flex; align-items: baseline; gap: 1.5rem;
+    padding: 1.5rem 2rem;
     position: relative;
   }
   header::after { content: ''; position: absolute; bottom: 3px; left: 0; right: 0; height: 1px; background: var(--ink); }
-  .logo { font-size: 2rem; font-weight: 900; letter-spacing: -0.02em; }
+  .logo { font-size: 1.8rem; font-weight: 900; letter-spacing: -0.02em; }
   .logo span { color: var(--accent); }
-  .tagline { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; border-left: 1px solid var(--border); padding-left: 1.5rem; }
- 
-  main { max-width: 960px; margin: 0 auto; padding: 3rem 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: start; }
- 
+  .tagline { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.3rem; }
+
+  /* API Key Bar — always visible */
+  .key-bar {
+    background: var(--ink);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .key-bar-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+
+  .api-tabs { display: flex; flex-shrink: 0; }
+  .api-tab {
+    padding: 0.38rem 0.85rem;
+    font-family: 'DM Mono', monospace; font-size: 0.63rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    cursor: pointer; border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.4); background: none; transition: all 0.15s;
+  }
+  .api-tab:first-child { border-right: none; }
+  .api-tab.active { background: var(--gold); color: var(--ink); border-color: var(--gold); font-weight: 500; }
+
+  .key-input-wrap { flex: 1; min-width: 200px; position: relative; }
+  .key-input {
+    width: 100%;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 0.5rem 0.85rem;
+    font-family: 'DM Mono', monospace; font-size: 0.78rem;
+    letter-spacing: 0.04em; outline: none; transition: border-color 0.15s;
+  }
+  .key-input:focus { border-color: var(--gold); }
+  .key-input::placeholder { color: rgba(255,255,255,0.25); font-size: 0.7rem; }
+
+  .key-save-btn {
+    background: var(--gold); color: var(--ink); border: none;
+    padding: 0.5rem 1.1rem; font-family: 'DM Mono', monospace;
+    font-size: 0.65rem; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; cursor: pointer; transition: opacity 0.15s; white-space: nowrap;
+  }
+  .key-save-btn:hover { opacity: 0.85; }
+
+  .key-clear-btn {
+    background: none; color: rgba(255,255,255,0.35);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 0.5rem 0.8rem; font-family: 'DM Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .key-clear-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  .key-saved-indicator {
+    font-family: 'DM Mono', monospace; font-size: 0.62rem;
+    white-space: nowrap;
+  }
+  .key-saved-indicator.ok { color: #52b788; }
+  .key-saved-indicator.empty { color: rgba(255,255,255,0.3); }
+
+  /* Main layout */
+  main { max-width: 960px; margin: 0 auto; padding: 2.5rem 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: start; }
   .upload-panel { position: sticky; top: 2rem; }
- 
+
+  .section-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+
   .upload-label {
     display: block; border: 2px dashed var(--border); border-radius: 2px;
     aspect-ratio: 4/3; cursor: pointer; overflow: hidden; position: relative;
@@ -42,26 +110,21 @@
   }
   .upload-label:hover { border-color: var(--ink); }
   .upload-label.has-image { border-style: solid; border-color: var(--ink); }
- 
-  .upload-placeholder {
-    position: absolute; inset: 0; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 0.75rem; color: var(--muted); transition: opacity 0.2s;
-  }
+  .upload-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; color: var(--muted); transition: opacity 0.2s; }
   .upload-label.has-image .upload-placeholder { opacity: 0; }
   .upload-icon { width: 48px; height: 48px; border: 2px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
   .upload-hint { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; text-align: center; line-height: 1.8; }
- 
   #preview-img { width: 100%; height: 100%; object-fit: contain; display: none; padding: 0.5rem; }
   .upload-label.has-image #preview-img { display: block; }
   #file-input { display: none; }
- 
+
   .analyze-btn {
     width: 100%; margin-top: 1rem; padding: 0.9rem;
     background: var(--ink); color: var(--paper); border: none;
     font-family: 'Noto Serif TC', serif; font-size: 0.9rem; font-weight: 700;
     letter-spacing: 0.1em; cursor: pointer; transition: background 0.15s;
   }
-  .analyze-btn:hover { background: var(--accent); }
+  .analyze-btn:hover:not(:disabled) { background: var(--accent); }
   .analyze-btn:disabled { background: var(--muted); cursor: not-allowed; }
   .btn-inner { display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
   .spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
@@ -69,37 +132,35 @@
   .analyze-btn.loading .btn-text::after { content: '分析中…'; }
   .analyze-btn:not(.loading) .btn-text::after { content: '開始診斷'; }
   @keyframes spin { to { transform: rotate(360deg); } }
- 
+
+  /* Results */
   .results-panel { min-height: 200px; }
-  .section-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.5rem; }
- 
   .critique-card {
     background: var(--card); border: 1px solid var(--border); border-top: 3px solid var(--ink);
     padding: 1.5rem; margin-bottom: 1.5rem;
     opacity: 0; transform: translateY(12px); transition: opacity 0.4s, transform 0.4s;
   }
   .critique-card.visible { opacity: 1; transform: none; }
- 
   .card-title {
     font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
     color: var(--accent); margin-bottom: 1rem; font-family: 'DM Mono', monospace;
     display: flex; align-items: center; gap: 0.5rem;
   }
   .card-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
- 
+
   .dimension { display: grid; grid-template-columns: 3.5rem 1fr; gap: 0.25rem 0.75rem; margin-bottom: 0.9rem; align-items: start; }
   .dim-name { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; color: var(--muted); padding-top: 0.15rem; font-family: 'DM Mono', monospace; }
   .dim-content { font-size: 0.88rem; line-height: 1.65; }
-  .pro { color: #2d6a4f; }
+  .pro { color: var(--green); }
   .pro::before { content: '＋ '; font-weight: 700; opacity: 0.7; }
   .con { color: var(--accent); margin-top: 0.2rem; }
   .con::before { content: '－ '; font-weight: 700; opacity: 0.7; }
- 
+
   .item-list { list-style: none; }
   .item-list li { font-size: 0.88rem; line-height: 1.6; padding: 0.35rem 0; border-bottom: 1px solid var(--border); display: flex; gap: 0.6rem; align-items: flex-start; }
   .item-list li:last-child { border-bottom: none; }
   .item-num { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--muted); min-width: 1.2rem; padding-top: 0.15rem; }
- 
+
   .practice-card {
     background: var(--ink); color: var(--paper); padding: 1.5rem; margin-bottom: 1.5rem;
     opacity: 0; transform: translateY(12px); transition: opacity 0.4s 0.15s, transform 0.4s 0.15s;
@@ -110,31 +171,47 @@
   .practice-item { display: flex; gap: 0.75rem; padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; line-height: 1.55; align-items: flex-start; }
   .practice-item:last-child { border-bottom: none; }
   .practice-num { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--gold); min-width: 1.5rem; padding-top: 0.15rem; }
- 
+
   .empty-state { border: 1px dashed var(--border); padding: 3rem 2rem; text-align: center; color: var(--muted); }
   .empty-state p { font-size: 0.85rem; line-height: 2; font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
- 
-  .error-msg { border-left: 3px solid var(--accent); padding: 1rem 1.25rem; font-size: 0.85rem; color: var(--accent); background: #fff5f5; margin-bottom: 1rem; }
- 
-  footer { border-top: 1px solid var(--border); padding: 1.5rem 3rem; display: flex; justify-content: space-between; align-items: center; font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; }
+  .error-msg { border-left: 3px solid var(--accent); padding: 1rem 1.25rem; font-size: 0.85rem; color: var(--accent); background: #fff5f5; margin-bottom: 1rem; line-height: 1.6; }
+
+  footer { border-top: 1px solid var(--border); padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; }
   .free-badge { background: var(--ink); color: var(--paper); padding: 0.2rem 0.6rem; font-size: 0.6rem; letter-spacing: 0.15em; }
- 
+
   @media (max-width: 680px) {
     main { grid-template-columns: 1fr; gap: 2rem; }
     .upload-panel { position: static; }
-    header { padding: 1.5rem; flex-wrap: wrap; gap: 0.5rem; }
-    .tagline { border-left: none; padding-left: 0; }
+    .key-bar { gap: 0.75rem; }
     footer { flex-direction: column; gap: 0.5rem; text-align: center; }
   }
 </style>
 </head>
 <body>
- 
+
 <header>
-  <div class="logo">JOE畫作<span>診斷室</span></div>
-  <div class="tagline">AI Art Critique · Gemini · 免費使用</div>
+  <div class="logo">畫作<span>診斷室</span></div>
+  <div class="tagline">AI Art Critique · Gemini · Claude</div>
 </header>
- 
+
+<!-- Always-visible API Key Bar -->
+<div class="key-bar">
+  <span class="key-bar-label">API Key</span>
+
+  <div class="api-tabs">
+    <button class="api-tab active" id="tab-gemini" onclick="switchTab('gemini')">Gemini</button>
+    <button class="api-tab" id="tab-claude" onclick="switchTab('claude')">Claude</button>
+  </div>
+
+  <div class="key-input-wrap">
+    <input class="key-input" type="password" id="key-input" placeholder="AIzaSy...">
+  </div>
+
+  <button class="key-save-btn" id="save-btn">儲存</button>
+  <button class="key-clear-btn" id="clear-btn">清除</button>
+  <span class="key-saved-indicator" id="key-indicator">—</span>
+</div>
+
 <main>
   <div class="upload-panel">
     <div class="section-label">上傳作品</div>
@@ -153,7 +230,7 @@
       </div>
     </button>
   </div>
- 
+
   <div class="results-panel">
     <div class="section-label">診斷結果</div>
     <div class="empty-state" id="empty-state">
@@ -164,32 +241,86 @@
     <div id="practice-container"></div>
   </div>
 </main>
- 
+
 <footer>
-  <span>畫作診斷室 · Powered by Gemini</span>
+  <span>畫作診斷室 · Powered by Gemini / Claude</span>
   <span class="free-badge">FREE PLAN</span>
 </footer>
- 
+
 <script>
-  // ★ 換成你的 Worker 網址 ★
-  const WORKER_URL = 'https://restless-mountain-037e.joearcx.workers.dev/';
- 
-  const fileInput = document.getElementById('file-input');
-  const uploadLabel = document.getElementById('upload-label');
-  const previewImg = document.getElementById('preview-img');
-  const analyzeBtn = document.getElementById('analyze-btn');
-  const emptyState = document.getElementById('empty-state');
-  const errorContainer = document.getElementById('error-container');
+  const WORKER_URL = 'https://your-worker.your-subdomain.workers.dev';
+
+  const PLACEHOLDERS = { gemini: 'AIzaSy...', claude: 'sk-ant-api03-...' };
+  let currentTab = 'gemini';
+
+  const keyInput     = document.getElementById('key-input');
+  const saveBtn      = document.getElementById('save-btn');
+  const clearBtn     = document.getElementById('clear-btn');
+  const keyIndicator = document.getElementById('key-indicator');
+  const analyzeBtn   = document.getElementById('analyze-btn');
+  const emptyState   = document.getElementById('empty-state');
+  const errorContainer   = document.getElementById('error-container');
   const critiqueContainer = document.getElementById('critique-container');
   const practiceContainer = document.getElementById('practice-container');
- 
+  const fileInput    = document.getElementById('file-input');
+  const uploadLabel  = document.getElementById('upload-label');
+  const previewImg   = document.getElementById('preview-img');
+
   let currentBase64 = null;
   let currentMediaType = null;
- 
+
+  function getKey(type) { return localStorage.getItem(`api_key_${type}`) || ''; }
+  function getActiveKey() {
+    const g = getKey('gemini'), c = getKey('claude');
+    if (g) return { key: g, type: 'gemini' };
+    if (c) return { key: c, type: 'claude' };
+    return null;
+  }
+
+  function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('tab-gemini').classList.toggle('active', tab === 'gemini');
+    document.getElementById('tab-claude').classList.toggle('active', tab === 'claude');
+    keyInput.placeholder = PLACEHOLDERS[tab];
+    const saved = getKey(tab);
+    keyInput.value = saved ? '••••••••••••••••' : '';
+    updateIndicator();
+  }
+
+  function updateIndicator() {
+    const saved = getKey(currentTab);
+    keyIndicator.textContent = saved ? '✓ 已儲存' : '未設定';
+    keyIndicator.className = `key-saved-indicator ${saved ? 'ok' : 'empty'}`;
+  }
+
+  saveBtn.addEventListener('click', () => {
+    const val = keyInput.value.trim();
+    if (val && !val.startsWith('•')) {
+      localStorage.setItem(`api_key_${currentTab}`, val);
+      keyInput.value = '••••••••••••••••';
+      updateIndicator();
+    }
+  });
+
+  clearBtn.addEventListener('click', () => {
+    localStorage.removeItem(`api_key_${currentTab}`);
+    keyInput.value = '';
+    updateIndicator();
+  });
+
+  keyInput.addEventListener('focus', () => {
+    if (keyInput.value.startsWith('•')) keyInput.value = '';
+  });
+  keyInput.addEventListener('keydown', e => { if (e.key === 'Enter') saveBtn.click(); });
+
+  // Init
+  switchTab('gemini');
+
+  // File upload
   uploadLabel.addEventListener('dragover', e => e.preventDefault());
   uploadLabel.addEventListener('drop', e => { e.preventDefault(); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
   fileInput.addEventListener('change', () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); });
- 
+
   function handleFile(file) {
     if (!['image/jpeg','image/png','image/webp','image/gif'].includes(file.type)) return;
     currentMediaType = file.type;
@@ -202,31 +333,36 @@
     };
     reader.readAsDataURL(file);
   }
- 
+
   analyzeBtn.addEventListener('click', async () => {
     if (!currentBase64) return;
+    const active = getActiveKey();
+    if (!active) {
+      keyInput.focus();
+      keyInput.style.borderColor = 'var(--gold)';
+      setTimeout(() => keyInput.style.borderColor = '', 1500);
+      return;
+    }
+
     analyzeBtn.disabled = true;
     analyzeBtn.classList.add('loading');
     emptyState.style.display = 'none';
     errorContainer.innerHTML = '';
     critiqueContainer.innerHTML = '';
     practiceContainer.innerHTML = '';
- 
+
     try {
       const response = await fetch(WORKER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64: currentBase64, mediaType: currentMediaType })
+        body: JSON.stringify({ imageBase64: currentBase64, mediaType: currentMediaType, apiKey: active.key })
       });
- 
       const data = await response.json();
       if (data.error) throw new Error(data.error);
- 
-      // Clean markdown fences if any
+
       const raw = data.text.replace(/```json|```/g, '').trim();
       const jsonMatch = raw.match(/\{[\s\S]*\}/);
       if (!jsonMatch) throw new Error('無法解析回覆格式');
- 
       renderResults(JSON.parse(jsonMatch[0]));
     } catch (err) {
       errorContainer.innerHTML = `<div class="error-msg">分析失敗：${err.message}</div>`;
@@ -236,7 +372,7 @@
       analyzeBtn.classList.remove('loading');
     }
   });
- 
+
   function renderResults(result) {
     const c = result.critique;
     const dims = [
@@ -244,7 +380,6 @@
       { key: 'lighting',    label: '光影' },
       { key: 'color',       label: '色彩' },
     ];
- 
     const dimsHTML = dims.map(d => `
       <div class="dimension">
         <div class="dim-name">${d.label}</div>
@@ -253,10 +388,10 @@
           <div class="con">${c[d.key].con}</div>
         </div>
       </div>`).join('');
- 
+
     const problemsHTML = c.problems.map((p,i) => `<li><span class="item-num">0${i+1}</span><span>${p}</span></li>`).join('');
     const suggestHTML  = c.suggestions.map((s,i) => `<li><span class="item-num">0${i+1}</span><span>${s}</span></li>`).join('');
- 
+
     critiqueContainer.innerHTML = `
       <div class="critique-card" id="card-critique">
         <div class="card-title">優缺點分析</div>
@@ -270,19 +405,19 @@
           <ul class="item-list">${suggestHTML}</ul>
         </div>
       </div>`;
- 
+
     const practiceHTML = result.practice.map((p,i) => `
       <div class="practice-item">
         <span class="practice-num">0${i+1}</span>
         <span>${p}</span>
       </div>`).join('');
- 
+
     practiceContainer.innerHTML = `
       <div class="practice-card" id="card-practice">
         <div class="card-title">建議練習方向</div>
         ${practiceHTML}
       </div>`;
- 
+
     requestAnimationFrame(() => requestAnimationFrame(() => {
       document.getElementById('card-critique')?.classList.add('visible');
       document.getElementById('card-practice')?.classList.add('visible');
@@ -291,4 +426,3 @@
 </script>
 </body>
 </html>
- 
