@@ -50,7 +50,7 @@
   .key-clear-btn {
     background: none; color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.12);
     padding: 0.4rem 0.7rem; font-family: 'DM Mono', monospace; font-size: 0.6rem;
-    letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s;
   }
   .key-clear-btn:hover { color: var(--accent); border-color: var(--accent); }
   .key-status { font-family: 'DM Mono', monospace; font-size: 0.6rem; white-space: nowrap; }
@@ -62,20 +62,7 @@
   .upload-panel { position: sticky; top: 2rem; }
   .section-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
 
-  .diff-group { display: flex; margin-bottom: 1rem; width: 100%; }
-  .diff-btn {
-    flex: 1; padding: 0.55rem 0; text-align: center;
-    font-family: 'DM Mono', monospace; font-size: 0.7rem; font-weight: 500;
-    letter-spacing: 0.12em; text-transform: uppercase;
-    border: 1px solid var(--border); background: var(--card);
-    cursor: pointer; transition: all 0.15s; color: var(--muted);
-  }
-  .diff-btn:not(:last-child) { border-right: none; }
-  .diff-btn:hover { border-color: var(--ink); color: var(--ink); }
-  .diff-btn.easy.active   { background: #1a5276; border-color: #1a5276; color: #fff; }
-  .diff-btn.normal.active { background: #4a4a4a; border-color: #4a4a4a; color: #fff; }
-  .diff-btn.hard.active   { background: var(--accent); border-color: var(--accent); color: #fff; }
-
+  /* Upload */
   .upload-label {
     display: block; border: 2px dashed var(--border);
     aspect-ratio: 4/3; cursor: pointer; overflow: hidden; position: relative;
@@ -106,6 +93,21 @@
 
   /* Results */
   .results-panel { min-height: 200px; }
+
+  /* Type tabs */
+  .type-tabs { display: flex; margin-bottom: 1.2rem; }
+  .type-tab {
+    flex: 1; padding: 0.55rem 0; text-align: center;
+    font-family: 'DM Mono', monospace; font-size: 0.7rem; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    border: 1px solid var(--border); background: var(--card);
+    cursor: pointer; transition: all 0.15s; color: var(--muted);
+  }
+  .type-tab:not(:last-child) { border-right: none; }
+  .type-tab:hover { border-color: var(--ink); color: var(--ink); }
+  .type-tab.easy.active   { background: #1a5276; border-color: #1a5276; color: #fff; }
+  .type-tab.normal.active { background: #4a4a4a; border-color: #4a4a4a; color: #fff; }
+  .type-tab.hard.active   { background: var(--accent); border-color: var(--accent); color: #fff; }
 
   .critique-card {
     border: 1px solid var(--border); border-top: 3px solid var(--ink);
@@ -157,7 +159,6 @@
   .generate-card.visible { opacity: 1; transform: none; }
   .generate-card .card-title { color: #2d6a4f; }
   .generate-card .card-title::after { background: #a8d8a844; }
-
   .gen-btn {
     width: 100%; padding: 0.75rem; margin-top: 0.5rem;
     background: #2d6a4f; color: #fff; border: none;
@@ -166,7 +167,7 @@
   }
   .gen-btn:hover:not(:disabled) { background: #1a4a35; }
   .gen-btn:disabled { background: #aaa; cursor: not-allowed; }
-  .gen-hint { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: #2d6a4f; margin-bottom: 0.5rem; letter-spacing: 0.05em; }
+  .gen-hint { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: #2d6a4f; margin-bottom: 0.5rem; }
   .gen-img-wrap { margin-top: 1rem; text-align: center; }
   .gen-img-wrap img { max-width: 100%; border: 1px solid var(--border); }
 
@@ -204,13 +205,6 @@
 
 <main>
   <div class="upload-panel">
-    <div class="section-label">Type</div>
-    <div class="diff-group">
-      <button class="diff-btn easy"          id="diff-easy"   onclick="switchPersona('mama')">Easy</button>
-      <button class="diff-btn normal active" id="diff-normal" onclick="switchPersona('passerby')">Normal</button>
-      <button class="diff-btn hard"          id="diff-hard"   onclick="switchPersona('schizo')">Hard</button>
-    </div>
-
     <div class="section-label">作品</div>
     <label class="upload-label" id="upload-label" for="file-input">
       <div class="upload-placeholder">
@@ -220,7 +214,6 @@
       <img id="preview-img" alt="">
     </label>
     <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/gif">
-
     <button class="analyze-btn" id="analyze-btn" disabled>
       <div class="btn-inner">
         <div class="spinner"></div>
@@ -233,15 +226,23 @@
     <div class="section-label">結果</div>
     <div class="empty-state" id="empty-state"><p>上傳作品<br>開始分析</p></div>
     <div id="error-container"></div>
-    <div id="critique-container"></div>
-    <div id="practice-container"></div>
-    <div id="generate-container"></div>
+    <div id="results-body" style="display:none">
+      <!-- Type tabs -->
+      <div class="type-tabs">
+        <button class="type-tab easy"   onclick="switchType('easy')">Easy</button>
+        <button class="type-tab normal active" onclick="switchType('normal')">Normal</button>
+        <button class="type-tab hard"   onclick="switchType('hard')">Hard</button>
+      </div>
+      <div id="critique-container"></div>
+      <div id="practice-container"></div>
+      <div id="generate-container"></div>
+    </div>
   </div>
 </main>
 
 <footer>
-  <span>畫作診斷室</span>
-  <span>Claude · Gemini · Imagen 3</span>
+  <span>JOE 畫作診斷室</span>
+  <span>Claude · Gemini · Imagen 4</span>
 </footer>
 
 <script>
@@ -249,31 +250,32 @@
   const PLACEHOLDERS = { gemini: 'AIzaSy...', claude: 'sk-ant-...' };
 
   let currentTab = 'claude';
-  let currentPersona = 'passerby';
-  let currentDiff = 'normal';
+  let currentType = 'normal';
   let autoSaveTimer = null;
   let currentBase64 = null;
   let currentMediaType = null;
   let currentImagenPrompt = '';
+  let allResults = null;
 
-  const keyInput   = document.getElementById('key-input');
-  const clearBtn   = document.getElementById('clear-btn');
-  const keyStatus  = document.getElementById('key-status');
-  const analyzeBtn = document.getElementById('analyze-btn');
-  const btnText    = document.getElementById('btn-text');
-  const emptyState = document.getElementById('empty-state');
+  const keyInput    = document.getElementById('key-input');
+  const clearBtn    = document.getElementById('clear-btn');
+  const keyStatus   = document.getElementById('key-status');
+  const analyzeBtn  = document.getElementById('analyze-btn');
+  const btnText     = document.getElementById('btn-text');
+  const emptyState  = document.getElementById('empty-state');
+  const resultsBody = document.getElementById('results-body');
   const errorContainer    = document.getElementById('error-container');
   const critiqueContainer = document.getElementById('critique-container');
   const practiceContainer = document.getElementById('practice-container');
   const generateContainer = document.getElementById('generate-container');
-  const fileInput  = document.getElementById('file-input');
+  const fileInput   = document.getElementById('file-input');
   const uploadLabel = document.getElementById('upload-label');
   const previewImg  = document.getElementById('preview-img');
 
   function getKey(t) { return localStorage.getItem(`api_key_${t}`) || ''; }
   function getActiveKey() {
     const c = getKey('claude'), g = getKey('gemini');
-    return c ? { key: c, type: 'claude' } : g ? { key: g, type: 'gemini' } : null;
+    return c ? { key: c } : g ? { key: g } : null;
   }
   function getGeminiKey() { return getKey('gemini'); }
 
@@ -292,12 +294,12 @@
     updateStatus();
   }
 
-  function switchPersona(p) {
-    const map = { mama: 'easy', passerby: 'normal', schizo: 'hard' };
-    currentPersona = p; currentDiff = map[p];
-    ['easy','normal','hard'].forEach(d =>
-      document.getElementById(`diff-${d}`).classList.toggle('active', d === currentDiff)
-    );
+  function switchType(type) {
+    currentType = type;
+    document.querySelectorAll('.type-tab').forEach(t => {
+      t.classList.toggle('active', t.classList.contains(type));
+    });
+    if (allResults) renderCritique(allResults[type], type);
   }
 
   keyInput.addEventListener('input', () => {
@@ -346,16 +348,15 @@
     analyzeBtn.classList.add('loading');
     btnText.textContent = '分析中';
     emptyState.style.display = 'none';
+    resultsBody.style.display = 'none';
     errorContainer.innerHTML = '';
-    critiqueContainer.innerHTML = '';
-    practiceContainer.innerHTML = '';
-    generateContainer.innerHTML = '';
+    allResults = null;
 
     try {
       const res = await fetch(WORKER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64: currentBase64, mediaType: currentMediaType, apiKey: active.key, persona: currentPersona })
+        body: JSON.stringify({ imageBase64: currentBase64, mediaType: currentMediaType, apiKey: active.key })
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
@@ -363,9 +364,15 @@
       const raw = data.text.replace(/```json|```/g, '').trim();
       const m = raw.match(/\{[\s\S]*\}/);
       if (!m) throw new Error('無法解析回覆格式');
+
       const result = JSON.parse(m[0]);
+      allResults = result;
       currentImagenPrompt = result.imagen_prompt || '';
-      renderResults(result);
+
+      resultsBody.style.display = 'block';
+      switchType('normal');
+      renderGenerateCard();
+
     } catch (err) {
       errorContainer.innerHTML = `<div class="error-msg">${err.message}</div>`;
       emptyState.style.display = '';
@@ -375,6 +382,62 @@
       btnText.textContent = '分析';
     }
   });
+
+  function renderCritique(r, type) {
+    const dims = [
+      { key: 'composition', label: '構圖' },
+      { key: 'lighting',    label: '光影' },
+      { key: 'color',       label: '色彩' },
+    ];
+    const dimsHTML = dims.map(d => `
+      <div class="dimension">
+        <div class="dim-name">${d.label}</div>
+        <div class="dim-content">
+          <div class="pro">${r.critique[d.key].pro}</div>
+          <div class="con">${r.critique[d.key].con}</div>
+        </div>
+      </div>`).join('');
+
+    const probHTML = r.critique.problems.map((p,i) => `<li><span class="item-num">0${i+1}</span><span>${p}</span></li>`).join('');
+    const suggHTML = r.critique.suggestions.map((s,i) => `<li><span class="item-num">0${i+1}</span><span>${s}</span></li>`).join('');
+
+    critiqueContainer.innerHTML = `
+      <div class="critique-card ${type} visible">
+        <div class="card-title">分析</div>
+        ${dimsHTML}
+        <div style="margin-top:1rem">
+          <div class="card-title" style="margin-bottom:0.5rem">問題</div>
+          <ul class="item-list">${probHTML}</ul>
+        </div>
+        <div style="margin-top:0.9rem">
+          <div class="card-title" style="margin-bottom:0.5rem">建議</div>
+          <ul class="item-list">${suggHTML}</ul>
+        </div>
+      </div>`;
+
+    const pracHTML = r.practice.map((p,i) => `
+      <div class="practice-item"><span class="practice-num">0${i+1}</span><span>${p}</span></div>`).join('');
+
+    practiceContainer.innerHTML = `
+      <div class="practice-card visible">
+        <div class="card-title">練習方向</div>
+        ${pracHTML}
+      </div>`;
+  }
+
+  function renderGenerateCard() {
+    const hasGemini = !!getGeminiKey();
+    generateContainer.innerHTML = `
+      <div class="generate-card visible">
+        <div class="card-title">建議版本</div>
+        ${hasGemini
+          ? `<div class="gen-hint">Imagen 4 生成改善參考圖（Normal 標準 · ~$0.03／張）</div>
+             <button class="gen-btn" id="gen-btn" onclick="generateImage()">生成建議圖</button>
+             <div id="gen-img-wrap" class="gen-img-wrap"></div>`
+          : `<div style="font-family:'DM Mono',monospace;font-size:0.68rem;color:#888;padding:0.5rem 0;">輸入 Gemini Key 後可生成建議參考圖</div>`
+        }
+      </div>`;
+  }
 
   async function generateImage() {
     const geminiKey = getGeminiKey();
@@ -407,69 +470,6 @@
       genBtn.disabled = false;
       genBtn.textContent = '生成建議圖';
     }
-  }
-
-  function renderResults(result) {
-    const c = result.critique;
-    const dims = [
-      { key: 'composition', label: '構圖' },
-      { key: 'lighting',    label: '光影' },
-      { key: 'color',       label: '色彩' },
-    ];
-
-    const dimsHTML = dims.map(d => `
-      <div class="dimension">
-        <div class="dim-name">${d.label}</div>
-        <div class="dim-content">
-          <div class="pro">${c[d.key].pro}</div>
-          <div class="con">${c[d.key].con}</div>
-        </div>
-      </div>`).join('');
-
-    const probHTML = c.problems.map((p,i) => `<li><span class="item-num">0${i+1}</span><span>${p}</span></li>`).join('');
-    const suggHTML = c.suggestions.map((s,i) => `<li><span class="item-num">0${i+1}</span><span>${s}</span></li>`).join('');
-
-    critiqueContainer.innerHTML = `
-      <div class="critique-card ${currentDiff}" id="card-critique">
-        <div class="card-title">分析</div>
-        ${dimsHTML}
-        <div style="margin-top:1rem">
-          <div class="card-title" style="margin-bottom:0.5rem">問題</div>
-          <ul class="item-list">${probHTML}</ul>
-        </div>
-        <div style="margin-top:0.9rem">
-          <div class="card-title" style="margin-bottom:0.5rem">建議</div>
-          <ul class="item-list">${suggHTML}</ul>
-        </div>
-      </div>`;
-
-    const pracHTML = result.practice.map((p,i) => `
-      <div class="practice-item"><span class="practice-num">0${i+1}</span><span>${p}</span></div>`).join('');
-
-    practiceContainer.innerHTML = `
-      <div class="practice-card" id="card-practice">
-        <div class="card-title">練習方向</div>
-        ${pracHTML}
-      </div>`;
-
-    // Generate card — 需要 Gemini Key
-    const hasGemini = !!getGeminiKey();
-    generateContainer.innerHTML = `
-      <div class="generate-card" id="card-generate">
-        <div class="card-title">建議版本</div>
-        ${hasGemini
-          ? `<div class="gen-hint">以 Imagen 3 生成改善建議參考圖（需 Gemini Key · ~$0.03／張）</div>
-             <button class="gen-btn" id="gen-btn" onclick="generateImage()">生成建議圖</button>
-             <div id="gen-img-wrap" class="gen-img-wrap"></div>`
-          : `<div style="font-family:'DM Mono',monospace;font-size:0.68rem;color:#888;padding:0.5rem 0;">輸入 Gemini Key 後可生成建議參考圖</div>`
-        }
-      </div>`;
-
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      document.getElementById('card-critique')?.classList.add('visible');
-      document.getElementById('card-practice')?.classList.add('visible');
-      document.getElementById('card-generate')?.classList.add('visible');
-    }));
   }
 </script>
 </body>
