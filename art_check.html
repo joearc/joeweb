@@ -20,68 +20,62 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: var(--paper); color: var(--ink); font-family: 'Noto Serif TC', serif; min-height: 100vh; }
 
-  header {
-    border-bottom: 3px double var(--ink);
-    padding: 1.5rem 2rem; position: relative;
-  }
+  header { border-bottom: 3px double var(--ink); padding: 1.5rem 2rem; position: relative; }
   header::after { content: ''; position: absolute; bottom: 3px; left: 0; right: 0; height: 1px; background: var(--ink); }
   .logo { font-size: 1.8rem; font-weight: 900; letter-spacing: -0.02em; }
   .logo span { color: var(--accent); }
 
   /* Key Bar */
   .key-bar {
-    background: var(--ink); padding: 0.85rem 2rem;
-    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    background: var(--ink); padding: 0.7rem 2rem;
+    display: flex; align-items: center; gap: 0.85rem; flex-wrap: wrap;
   }
-  .key-bar-label { font-family: 'DM Mono', monospace; font-size: 0.63rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); white-space: nowrap; }
+  .key-bar-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); white-space: nowrap; }
   .api-tabs { display: flex; }
   .api-tab {
-    padding: 0.35rem 0.85rem; font-family: 'DM Mono', monospace; font-size: 0.63rem;
+    padding: 0.3rem 0.75rem; font-family: 'DM Mono', monospace; font-size: 0.6rem;
     letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
     border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.4); background: none; transition: all 0.15s;
   }
   .api-tab:first-child { border-right: none; }
   .api-tab.active { background: var(--gold); color: var(--ink); border-color: var(--gold); font-weight: 500; }
-  .key-input-wrap { flex: 1; min-width: 180px; }
+  .key-input-wrap { flex: 1; min-width: 150px; }
   .key-input {
     width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-    color: #fff; padding: 0.45rem 0.85rem; font-family: 'DM Mono', monospace;
-    font-size: 0.78rem; outline: none; transition: border-color 0.15s;
+    color: #fff; padding: 0.4rem 0.8rem; font-family: 'DM Mono', monospace;
+    font-size: 0.75rem; outline: none; transition: border-color 0.15s;
   }
   .key-input:focus { border-color: var(--gold); }
-  .key-input::placeholder { color: rgba(255,255,255,0.22); font-size: 0.7rem; }
+  .key-input::placeholder { color: rgba(255,255,255,0.2); font-size: 0.68rem; }
   .key-clear-btn {
     background: none; color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.12);
-    padding: 0.45rem 0.75rem; font-family: 'DM Mono', monospace; font-size: 0.63rem;
-    letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s;
+    padding: 0.4rem 0.7rem; font-family: 'DM Mono', monospace; font-size: 0.6rem;
+    letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; white-space: nowrap;
   }
   .key-clear-btn:hover { color: var(--accent); border-color: var(--accent); }
-  .key-status { font-family: 'DM Mono', monospace; font-size: 0.62rem; }
+  .key-status { font-family: 'DM Mono', monospace; font-size: 0.6rem; white-space: nowrap; }
   .key-status.ok { color: #52b788; }
   .key-status.empty { color: rgba(255,255,255,0.25); }
 
   /* Main */
   main { max-width: 960px; margin: 0 auto; padding: 2.5rem 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: start; }
   .upload-panel { position: sticky; top: 2rem; }
-  .section-label { font-family: 'DM Mono', monospace; font-size: 0.63rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.85rem; }
+  .section-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
 
-  /* Difficulty selector */
-  .diff-group { display: flex; gap: 0; margin-bottom: 1rem; width: 100%; }
+  .diff-group { display: flex; margin-bottom: 1rem; width: 100%; }
   .diff-btn {
-    flex: 1; padding: 0.6rem 0; text-align: center;
-    font-family: 'DM Mono', monospace; font-size: 0.72rem; font-weight: 500;
+    flex: 1; padding: 0.55rem 0; text-align: center;
+    font-family: 'DM Mono', monospace; font-size: 0.7rem; font-weight: 500;
     letter-spacing: 0.12em; text-transform: uppercase;
     border: 1px solid var(--border); background: var(--card);
     cursor: pointer; transition: all 0.15s; color: var(--muted);
   }
   .diff-btn:not(:last-child) { border-right: none; }
   .diff-btn:hover { border-color: var(--ink); color: var(--ink); }
-  .diff-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  .diff-btn.easy.active   { background: #1a5276; border-color: #1a5276; }
-  .diff-btn.normal.active { background: #4a4a4a; border-color: #4a4a4a; }
-  .diff-btn.hard.active   { background: var(--accent); border-color: var(--accent); }
+  .diff-btn.easy.active   { background: #1a5276; border-color: #1a5276; color: #fff; }
+  .diff-btn.normal.active { background: #4a4a4a; border-color: #4a4a4a; color: #fff; }
+  .diff-btn.hard.active   { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-  /* Upload */
   .upload-label {
     display: block; border: 2px dashed var(--border);
     aspect-ratio: 4/3; cursor: pointer; overflow: hidden; position: relative;
@@ -92,7 +86,7 @@
   .upload-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; color: var(--muted); transition: opacity 0.2s; }
   .upload-label.has-image .upload-placeholder { opacity: 0; }
   .upload-icon { width: 44px; height: 44px; border: 2px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-  .upload-hint { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; text-align: center; line-height: 1.8; }
+  .upload-hint { font-family: 'DM Mono', monospace; font-size: 0.65rem; text-transform: uppercase; text-align: center; line-height: 1.8; }
   #preview-img { width: 100%; height: 100%; object-fit: contain; display: none; padding: 0.5rem; }
   .upload-label.has-image #preview-img { display: block; }
   #file-input { display: none; }
@@ -100,9 +94,8 @@
   .analyze-btn {
     width: 100%; margin-top: 0.85rem; padding: 0.85rem;
     background: var(--ink); color: var(--paper); border: none;
-    font-family: 'DM Mono', monospace; font-size: 0.78rem; font-weight: 500;
-    letter-spacing: 0.15em; text-transform: uppercase;
-    cursor: pointer; transition: background 0.15s;
+    font-family: 'DM Mono', monospace; font-size: 0.75rem; font-weight: 500;
+    letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; transition: background 0.15s;
   }
   .analyze-btn:hover:not(:disabled) { background: var(--accent); }
   .analyze-btn:disabled { background: var(--muted); cursor: not-allowed; }
@@ -125,33 +118,24 @@
   .critique-card.hard   { border-top-color: var(--accent); }
 
   .card-title {
-    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
     margin-bottom: 1rem; font-family: 'DM Mono', monospace; color: var(--muted);
     display: flex; align-items: center; gap: 0.5rem;
   }
   .card-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-  .dimension { display: grid; grid-template-columns: 3.2rem 1fr; gap: 0.3rem 0.75rem; margin-bottom: 0.9rem; }
-  .dim-name { font-size: 0.68rem; font-weight: 700; color: var(--muted); padding-top: 0.4rem; font-family: 'DM Mono', monospace; }
-
-  .pro, .con {
-    padding: 0.35rem 0.65rem 0.35rem 0.5rem;
-    font-size: 0.86rem; line-height: 1.65; margin-bottom: 0.25rem;
-    display: flex; gap: 0.4rem; align-items: flex-start;
-  }
-  .pro::before { content: '+'; font-family: 'DM Mono', monospace; font-weight: 700; font-size: 0.95rem; flex-shrink: 0; }
-  .con::before { content: '−'; font-family: 'DM Mono', monospace; font-weight: 700; font-size: 0.95rem; flex-shrink: 0; }
-
-  /* 統一底色：優點黃、缺點淺紅 */
+  .dimension { display: grid; grid-template-columns: 3rem 1fr; gap: 0.3rem 0.75rem; margin-bottom: 0.9rem; }
+  .dim-name { font-size: 0.65rem; font-weight: 700; color: var(--muted); padding-top: 0.4rem; font-family: 'DM Mono', monospace; }
+  .pro, .con { padding: 0.3rem 0.6rem 0.3rem 0.5rem; font-size: 0.85rem; line-height: 1.65; margin-bottom: 0.2rem; display: flex; gap: 0.4rem; align-items: flex-start; }
+  .pro::before { content: '+'; font-family: 'DM Mono', monospace; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; color: #f9a825; }
+  .con::before { content: '−'; font-family: 'DM Mono', monospace; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; color: #c62828; }
   .pro { background: #fffde7; color: #5d4000; }
-  .pro::before { color: #f9a825; }
   .con { background: #fdecea; color: #7b1d1d; }
-  .con::before { color: #c62828; }
 
   .item-list { list-style: none; }
-  .item-list li { font-size: 0.87rem; line-height: 1.65; padding: 0.3rem 0; border-bottom: 1px solid var(--border); display: flex; gap: 0.6rem; }
+  .item-list li { font-size: 0.85rem; line-height: 1.65; padding: 0.3rem 0; border-bottom: 1px solid var(--border); display: flex; gap: 0.6rem; }
   .item-list li:last-child { border-bottom: none; }
-  .item-num { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); min-width: 1.2rem; padding-top: 0.15rem; }
+  .item-num { font-family: 'DM Mono', monospace; font-size: 0.63rem; color: var(--muted); min-width: 1.2rem; padding-top: 0.15rem; }
 
   .practice-card {
     background: var(--ink); color: var(--paper); padding: 1.5rem; margin-bottom: 1.5rem;
@@ -160,13 +144,34 @@
   .practice-card.visible { opacity: 1; transform: none; }
   .practice-card .card-title { color: var(--gold); }
   .practice-card .card-title::after { background: rgba(255,255,255,0.15); }
-  .practice-item { display: flex; gap: 0.75rem; padding: 0.55rem 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.88rem; line-height: 1.55; }
+  .practice-item { display: flex; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.87rem; line-height: 1.55; }
   .practice-item:last-child { border-bottom: none; }
-  .practice-num { font-family: 'DM Mono', monospace; font-size: 0.63rem; color: var(--gold); min-width: 1.5rem; padding-top: 0.15rem; }
+  .practice-num { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--gold); min-width: 1.5rem; padding-top: 0.15rem; }
+
+  /* Generate card */
+  .generate-card {
+    border: 1px solid #a8d8a844; border-top: 3px solid #2d6a4f;
+    padding: 1.5rem; margin-bottom: 1.5rem; background: #f0faf4;
+    opacity: 0; transform: translateY(10px); transition: opacity 0.35s 0.2s, transform 0.35s 0.2s;
+  }
+  .generate-card.visible { opacity: 1; transform: none; }
+  .generate-card .card-title { color: #2d6a4f; }
+  .generate-card .card-title::after { background: #a8d8a844; }
+
+  .gen-btn {
+    width: 100%; padding: 0.75rem; margin-top: 0.5rem;
+    background: #2d6a4f; color: #fff; border: none;
+    font-family: 'DM Mono', monospace; font-size: 0.72rem; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: background 0.15s;
+  }
+  .gen-btn:hover:not(:disabled) { background: #1a4a35; }
+  .gen-btn:disabled { background: #aaa; cursor: not-allowed; }
+  .gen-hint { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: #2d6a4f; margin-bottom: 0.5rem; letter-spacing: 0.05em; }
+  .gen-img-wrap { margin-top: 1rem; text-align: center; }
+  .gen-img-wrap img { max-width: 100%; border: 1px solid var(--border); }
 
   .empty-state { border: 1px dashed var(--border); padding: 3rem 2rem; text-align: center; color: var(--muted); }
   .empty-state p { font-size: 0.82rem; line-height: 2.2; font-family: 'DM Mono', monospace; }
-
   .error-msg { border-left: 3px solid var(--accent); padding: 1rem 1.25rem; font-size: 0.85rem; color: var(--accent); background: #fff5f5; margin-bottom: 1rem; line-height: 1.6; }
 
   footer { border-top: 1px solid var(--border); padding: 1.2rem 2rem; display: flex; justify-content: space-between; font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--muted); letter-spacing: 0.08em; }
@@ -181,7 +186,7 @@
 <body>
 
 <header>
-  <div class="logo">JOE<span>畫作診斷室</span></div>
+  <div class="logo">畫作<span>診斷室</span></div>
 </header>
 
 <div class="key-bar">
@@ -191,7 +196,7 @@
     <button class="api-tab active" id="tab-claude" onclick="switchTab('claude')">Claude</button>
   </div>
   <div class="key-input-wrap">
-    <input class="key-input" type="password" id="key-input" placeholder="AIzaSy...">
+    <input class="key-input" type="password" id="key-input" placeholder="sk-ant-...">
   </div>
   <button class="key-clear-btn" id="clear-btn">清除</button>
   <span class="key-status empty" id="key-status">未設定</span>
@@ -199,12 +204,11 @@
 
 <main>
   <div class="upload-panel">
-
-    <div class="section-label">type</div>
+    <div class="section-label">難度</div>
     <div class="diff-group">
-      <button class="diff-btn easy"   id="diff-easy"   onclick="switchPersona('mama')">Easy</button>
+      <button class="diff-btn easy"          id="diff-easy"   onclick="switchPersona('mama')">Easy</button>
       <button class="diff-btn normal active" id="diff-normal" onclick="switchPersona('passerby')">Normal</button>
-      <button class="diff-btn hard"   id="diff-hard"   onclick="switchPersona('schizo')">Hard</button>
+      <button class="diff-btn hard"          id="diff-hard"   onclick="switchPersona('schizo')">Hard</button>
     </div>
 
     <div class="section-label">作品</div>
@@ -223,23 +227,21 @@
         <span id="btn-text">分析</span>
       </div>
     </button>
-
   </div>
 
   <div class="results-panel">
     <div class="section-label">結果</div>
-    <div class="empty-state" id="empty-state">
-      <p>上傳作品<br>開始分析</p>
-    </div>
+    <div class="empty-state" id="empty-state"><p>上傳作品<br>開始分析</p></div>
     <div id="error-container"></div>
     <div id="critique-container"></div>
     <div id="practice-container"></div>
+    <div id="generate-container"></div>
   </div>
 </main>
 
 <footer>
   <span>畫作診斷室</span>
-  <span>Gemini 2.5 Pro · Claude Sonnet</span>
+  <span>Claude · Gemini · Imagen 3</span>
 </footer>
 
 <script>
@@ -252,25 +254,28 @@
   let autoSaveTimer = null;
   let currentBase64 = null;
   let currentMediaType = null;
+  let currentImagenPrompt = '';
 
-  const keyInput    = document.getElementById('key-input');
-  const clearBtn    = document.getElementById('clear-btn');
-  const keyStatus   = document.getElementById('key-status');
-  const analyzeBtn  = document.getElementById('analyze-btn');
-  const btnText     = document.getElementById('btn-text');
-  const emptyState  = document.getElementById('empty-state');
+  const keyInput   = document.getElementById('key-input');
+  const clearBtn   = document.getElementById('clear-btn');
+  const keyStatus  = document.getElementById('key-status');
+  const analyzeBtn = document.getElementById('analyze-btn');
+  const btnText    = document.getElementById('btn-text');
+  const emptyState = document.getElementById('empty-state');
   const errorContainer    = document.getElementById('error-container');
   const critiqueContainer = document.getElementById('critique-container');
   const practiceContainer = document.getElementById('practice-container');
-  const fileInput   = document.getElementById('file-input');
+  const generateContainer = document.getElementById('generate-container');
+  const fileInput  = document.getElementById('file-input');
   const uploadLabel = document.getElementById('upload-label');
   const previewImg  = document.getElementById('preview-img');
 
   function getKey(t) { return localStorage.getItem(`api_key_${t}`) || ''; }
   function getActiveKey() {
-    const g = getKey('gemini'), c = getKey('claude');
-    return c ? { key: c } : g ? { key: g } : null;
+    const c = getKey('claude'), g = getKey('gemini');
+    return c ? { key: c, type: 'claude' } : g ? { key: g, type: 'gemini' } : null;
   }
+  function getGeminiKey() { return getKey('gemini'); }
 
   function updateStatus() {
     const s = getKey(currentTab);
@@ -288,12 +293,11 @@
   }
 
   function switchPersona(p) {
-    const diffMap = { mama: 'easy', passerby: 'normal', schizo: 'hard' };
-    currentPersona = p;
-    currentDiff = diffMap[p];
-    ['easy','normal','hard'].forEach(d => {
-      document.getElementById(`diff-${d}`).classList.toggle('active', d === currentDiff);
-    });
+    const map = { mama: 'easy', passerby: 'normal', schizo: 'hard' };
+    currentPersona = p; currentDiff = map[p];
+    ['easy','normal','hard'].forEach(d =>
+      document.getElementById(`diff-${d}`).classList.toggle('active', d === currentDiff)
+    );
   }
 
   keyInput.addEventListener('input', () => {
@@ -345,6 +349,7 @@
     errorContainer.innerHTML = '';
     critiqueContainer.innerHTML = '';
     practiceContainer.innerHTML = '';
+    generateContainer.innerHTML = '';
 
     try {
       const res = await fetch(WORKER_URL, {
@@ -358,7 +363,9 @@
       const raw = data.text.replace(/```json|```/g, '').trim();
       const m = raw.match(/\{[\s\S]*\}/);
       if (!m) throw new Error('無法解析回覆格式');
-      renderResults(JSON.parse(m[0]));
+      const result = JSON.parse(m[0]);
+      currentImagenPrompt = result.imagen_prompt || '';
+      renderResults(result);
     } catch (err) {
       errorContainer.innerHTML = `<div class="error-msg">${err.message}</div>`;
       emptyState.style.display = '';
@@ -368,6 +375,33 @@
       btnText.textContent = '分析';
     }
   });
+
+  async function generateImage() {
+    const geminiKey = getGeminiKey();
+    if (!geminiKey || !currentImagenPrompt) return;
+
+    const genBtn = document.getElementById('gen-btn');
+    const genImgWrap = document.getElementById('gen-img-wrap');
+    genBtn.disabled = true;
+    genBtn.textContent = '生成中…';
+    genImgWrap.innerHTML = '';
+
+    try {
+      const res = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'generate', apiKey: geminiKey, imagenPrompt: currentImagenPrompt })
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      genImgWrap.innerHTML = `<img src="data:${data.mimeType};base64,${data.imageBase64}" alt="建議版本">`;
+    } catch (err) {
+      genImgWrap.innerHTML = `<div class="error-msg">${err.message}</div>`;
+    } finally {
+      genBtn.disabled = false;
+      genBtn.textContent = '生成建議圖';
+    }
+  }
 
   function renderResults(result) {
     const c = result.critique;
@@ -412,9 +446,23 @@
         ${pracHTML}
       </div>`;
 
+    // Generate card — 需要 Gemini Key
+    const hasGemini = !!getGeminiKey();
+    generateContainer.innerHTML = `
+      <div class="generate-card" id="card-generate">
+        <div class="card-title">建議版本</div>
+        ${hasGemini
+          ? `<div class="gen-hint">以 Imagen 3 生成改善建議參考圖（需 Gemini Key · ~$0.03／張）</div>
+             <button class="gen-btn" id="gen-btn" onclick="generateImage()">生成建議圖</button>
+             <div id="gen-img-wrap" class="gen-img-wrap"></div>`
+          : `<div style="font-family:'DM Mono',monospace;font-size:0.68rem;color:#888;padding:0.5rem 0;">輸入 Gemini Key 後可生成建議參考圖</div>`
+        }
+      </div>`;
+
     requestAnimationFrame(() => requestAnimationFrame(() => {
       document.getElementById('card-critique')?.classList.add('visible');
       document.getElementById('card-practice')?.classList.add('visible');
+      document.getElementById('card-generate')?.classList.add('visible');
     }));
   }
 </script>
