@@ -16,6 +16,8 @@
     --border: #d4c9b8;
     --card: #faf7f2;
     --green: #2d6a4f;
+    --praise: #1a5276;
+    --venom: #7b241c;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -29,12 +31,12 @@
   header::after { content: ''; position: absolute; bottom: 3px; left: 0; right: 0; height: 1px; background: var(--ink); }
   .logo { font-size: 1.8rem; font-weight: 900; letter-spacing: -0.02em; }
   .logo span { color: var(--accent); }
-  .tagline { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.3rem; }
+  .tagline { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.3rem; }
 
-  /* API Key Bar — always visible */
+  /* API Key Bar */
   .key-bar {
     background: var(--ink);
-    padding: 1rem 2rem;
+    padding: 0.9rem 2rem;
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -42,7 +44,7 @@
   }
   .key-bar-label {
     font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
+    font-size: 0.63rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     color: var(--gold);
@@ -51,7 +53,7 @@
 
   .api-tabs { display: flex; flex-shrink: 0; }
   .api-tab {
-    padding: 0.38rem 0.85rem;
+    padding: 0.35rem 0.85rem;
     font-family: 'DM Mono', monospace; font-size: 0.63rem;
     letter-spacing: 0.1em; text-transform: uppercase;
     cursor: pointer; border: 1px solid rgba(255,255,255,0.15);
@@ -60,47 +62,38 @@
   .api-tab:first-child { border-right: none; }
   .api-tab.active { background: var(--gold); color: var(--ink); border-color: var(--gold); font-weight: 500; }
 
-  .key-input-wrap { flex: 1; min-width: 200px; position: relative; }
+  .key-input-wrap { flex: 1; min-width: 200px; }
   .key-input {
     width: 100%;
     background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.15);
     color: #fff;
-    padding: 0.5rem 0.85rem;
+    padding: 0.45rem 0.85rem;
     font-family: 'DM Mono', monospace; font-size: 0.78rem;
     letter-spacing: 0.04em; outline: none; transition: border-color 0.15s;
   }
   .key-input:focus { border-color: var(--gold); }
-  .key-input::placeholder { color: rgba(255,255,255,0.25); font-size: 0.7rem; }
-
-  .key-save-btn {
-    background: var(--gold); color: var(--ink); border: none;
-    padding: 0.5rem 1.1rem; font-family: 'DM Mono', monospace;
-    font-size: 0.65rem; font-weight: 500; letter-spacing: 0.1em;
-    text-transform: uppercase; cursor: pointer; transition: opacity 0.15s; white-space: nowrap;
-  }
-  .key-save-btn:hover { opacity: 0.85; }
+  .key-input::placeholder { color: rgba(255,255,255,0.22); font-size: 0.7rem; }
 
   .key-clear-btn {
-    background: none; color: rgba(255,255,255,0.35);
-    border: 1px solid rgba(255,255,255,0.15);
-    padding: 0.5rem 0.8rem; font-family: 'DM Mono', monospace;
-    font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+    background: none; color: rgba(255,255,255,0.3);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 0.45rem 0.8rem; font-family: 'DM Mono', monospace;
+    font-size: 0.63rem; letter-spacing: 0.1em; text-transform: uppercase;
     cursor: pointer; transition: all 0.15s; white-space: nowrap;
   }
   .key-clear-btn:hover { color: var(--accent); border-color: var(--accent); }
 
-  .key-saved-indicator {
-    font-family: 'DM Mono', monospace; font-size: 0.62rem;
-    white-space: nowrap;
+  .key-status {
+    font-family: 'DM Mono', monospace; font-size: 0.62rem; white-space: nowrap;
+    min-width: 4rem; text-align: right;
   }
-  .key-saved-indicator.ok { color: #52b788; }
-  .key-saved-indicator.empty { color: rgba(255,255,255,0.3); }
+  .key-status.ok { color: #52b788; }
+  .key-status.empty { color: rgba(255,255,255,0.25); }
 
-  /* Main layout */
+  /* Main */
   main { max-width: 960px; margin: 0 auto; padding: 2.5rem 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: start; }
   .upload-panel { position: sticky; top: 2rem; }
-
   .section-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
 
   .upload-label {
@@ -130,31 +123,50 @@
   .spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
   .analyze-btn.loading .spinner { display: block; }
   .analyze-btn.loading .btn-text::after { content: '分析中…'; }
-  .analyze-btn:not(.loading) .btn-text::after { content: '開始診斷'; }
+  .analyze-btn:not(.loading) .btn-text::after { content: '分析'; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   /* Results */
   .results-panel { min-height: 200px; }
+
   .critique-card {
     background: var(--card); border: 1px solid var(--border); border-top: 3px solid var(--ink);
     padding: 1.5rem; margin-bottom: 1.5rem;
     opacity: 0; transform: translateY(12px); transition: opacity 0.4s, transform 0.4s;
   }
   .critique-card.visible { opacity: 1; transform: none; }
+
   .card-title {
-    font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--accent); margin-bottom: 1rem; font-family: 'DM Mono', monospace;
-    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 1rem; font-family: 'DM Mono', monospace;
+    display: flex; align-items: center; gap: 0.5rem; color: var(--ink);
   }
   .card-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-  .dimension { display: grid; grid-template-columns: 3.5rem 1fr; gap: 0.25rem 0.75rem; margin-bottom: 0.9rem; align-items: start; }
-  .dim-name { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; color: var(--muted); padding-top: 0.15rem; font-family: 'DM Mono', monospace; }
-  .dim-content { font-size: 0.88rem; line-height: 1.65; }
-  .pro { color: var(--green); }
-  .pro::before { content: '＋ '; font-weight: 700; opacity: 0.7; }
-  .con { color: var(--accent); margin-top: 0.2rem; }
-  .con::before { content: '－ '; font-weight: 700; opacity: 0.7; }
+  .dimension { display: grid; grid-template-columns: 3.5rem 1fr; gap: 0.3rem 0.75rem; margin-bottom: 1rem; align-items: start; }
+  .dim-name { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; color: var(--muted); padding-top: 0.15rem; font-family: 'DM Mono', monospace; }
+  .dim-content { font-size: 0.88rem; line-height: 1.7; }
+
+  .pro {
+    color: var(--praise);
+    background: #eaf0f6;
+    padding: 0.3rem 0.6rem;
+    border-left: 3px solid var(--praise);
+    margin-bottom: 0.3rem;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+  .pro::before { content: '✦ 讚 '; font-weight: 700; font-size: 0.7rem; opacity: 0.6; }
+
+  .con {
+    color: var(--venom);
+    background: #fdf2f2;
+    padding: 0.3rem 0.6rem;
+    border-left: 3px solid var(--venom);
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+  .con::before { content: '✦ 毒 '; font-weight: 700; font-size: 0.7rem; opacity: 0.6; }
 
   .item-list { list-style: none; }
   .item-list li { font-size: 0.88rem; line-height: 1.6; padding: 0.35rem 0; border-bottom: 1px solid var(--border); display: flex; gap: 0.6rem; align-items: flex-start; }
@@ -173,11 +185,12 @@
   .practice-num { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--gold); min-width: 1.5rem; padding-top: 0.15rem; }
 
   .empty-state { border: 1px dashed var(--border); padding: 3rem 2rem; text-align: center; color: var(--muted); }
-  .empty-state p { font-size: 0.85rem; line-height: 2; font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
+  .empty-state p { font-size: 0.85rem; line-height: 2.2; font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
+  .empty-emoji { font-size: 2rem; margin-bottom: 0.5rem; }
+
   .error-msg { border-left: 3px solid var(--accent); padding: 1rem 1.25rem; font-size: 0.85rem; color: var(--accent); background: #fff5f5; margin-bottom: 1rem; line-height: 1.6; }
 
   footer { border-top: 1px solid var(--border); padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; }
-  .free-badge { background: var(--ink); color: var(--paper); padding: 0.2rem 0.6rem; font-size: 0.6rem; letter-spacing: 0.15em; }
 
   @media (max-width: 680px) {
     main { grid-template-columns: 1fr; gap: 2rem; }
@@ -190,26 +203,21 @@
 <body>
 
 <header>
-  <div class="logo">JOE畫作<span>診斷室</span></div>
-  <div class="tagline">AI Art Critique · Gemini · Claude</div>
+  <div class="logo">畫作<span>診斷室</span></div>
+  <div class="tagline">不專業藝術分析 · Gemini · Claude</div>
 </header>
 
-<!-- Always-visible API Key Bar -->
 <div class="key-bar">
   <span class="key-bar-label">API Key</span>
-
   <div class="api-tabs">
     <button class="api-tab active" id="tab-gemini" onclick="switchTab('gemini')">Gemini</button>
     <button class="api-tab" id="tab-claude" onclick="switchTab('claude')">Claude</button>
   </div>
-
   <div class="key-input-wrap">
     <input class="key-input" type="password" id="key-input" placeholder="AIzaSy...">
   </div>
-
-  <button class="key-save-btn" id="save-btn">儲存</button>
   <button class="key-clear-btn" id="clear-btn">清除</button>
-  <span class="key-saved-indicator" id="key-indicator">—</span>
+  <span class="key-status empty" id="key-status">未設定</span>
 </div>
 
 <main>
@@ -234,7 +242,8 @@
   <div class="results-panel">
     <div class="section-label">診斷結果</div>
     <div class="empty-state" id="empty-state">
-      <p>上傳作品後<br>AI 將直接給出<br>優缺點 × 練習方向</p>
+      <div class="empty-emoji">🎭</div>
+      <p>分析</p>
     </div>
     <div id="error-container"></div>
     <div id="critique-container"></div>
@@ -243,28 +252,28 @@
 </main>
 
 <footer>
-  <span>畫作診斷室 · Powered by Gemini / Claude</span>
-  <span class="free-badge">FREE PLAN</span>
+  <span>畫作診斷室 · </span>
+  <span>Gemini 2.5 Pro · Claude Sonnet</span>
 </footer>
 
 <script>
   const WORKER_URL = 'https://restless-mountain-037e.joearcx.workers.dev';
 
-  const PLACEHOLDERS = { gemini: 'AIzaSy...', claude: 'sk-ant-api03-...' };
+  const PLACEHOLDERS = { gemini: 'AIzaSy...（Gemini API Key）', claude: 'sk-ant-...（Anthropic API Key）' };
   let currentTab = 'gemini';
+  let autoSaveTimer = null;
 
-  const keyInput     = document.getElementById('key-input');
-  const saveBtn      = document.getElementById('save-btn');
-  const clearBtn     = document.getElementById('clear-btn');
-  const keyIndicator = document.getElementById('key-indicator');
-  const analyzeBtn   = document.getElementById('analyze-btn');
-  const emptyState   = document.getElementById('empty-state');
-  const errorContainer   = document.getElementById('error-container');
+  const keyInput    = document.getElementById('key-input');
+  const clearBtn    = document.getElementById('clear-btn');
+  const keyStatus   = document.getElementById('key-status');
+  const analyzeBtn  = document.getElementById('analyze-btn');
+  const emptyState  = document.getElementById('empty-state');
+  const errorContainer    = document.getElementById('error-container');
   const critiqueContainer = document.getElementById('critique-container');
   const practiceContainer = document.getElementById('practice-container');
-  const fileInput    = document.getElementById('file-input');
-  const uploadLabel  = document.getElementById('upload-label');
-  const previewImg   = document.getElementById('preview-img');
+  const fileInput   = document.getElementById('file-input');
+  const uploadLabel = document.getElementById('upload-label');
+  const previewImg  = document.getElementById('preview-img');
 
   let currentBase64 = null;
   let currentMediaType = null;
@@ -277,6 +286,12 @@
     return null;
   }
 
+  function updateStatus() {
+    const saved = getKey(currentTab);
+    keyStatus.textContent = saved ? '✓ 已儲存' : '未設定';
+    keyStatus.className = `key-status ${saved ? 'ok' : 'empty'}`;
+  }
+
   function switchTab(tab) {
     currentTab = tab;
     document.getElementById('tab-gemini').classList.toggle('active', tab === 'gemini');
@@ -284,36 +299,40 @@
     keyInput.placeholder = PLACEHOLDERS[tab];
     const saved = getKey(tab);
     keyInput.value = saved ? '••••••••••••••••' : '';
-    updateIndicator();
+    updateStatus();
   }
 
-  function updateIndicator() {
-    const saved = getKey(currentTab);
-    keyIndicator.textContent = saved ? '✓ 已儲存' : '未設定';
-    keyIndicator.className = `key-saved-indicator ${saved ? 'ok' : 'empty'}`;
-  }
-
-  saveBtn.addEventListener('click', () => {
+  // Auto-save on input (debounced 800ms)
+  keyInput.addEventListener('input', () => {
+    clearTimeout(autoSaveTimer);
     const val = keyInput.value.trim();
-    if (val && !val.startsWith('•')) {
-      localStorage.setItem(`api_key_${currentTab}`, val);
-      keyInput.value = '••••••••••••••••';
-      updateIndicator();
-    }
+    if (!val || val.startsWith('•')) return;
+    autoSaveTimer = setTimeout(() => {
+      if (val.length > 10) {
+        localStorage.setItem(`api_key_${currentTab}`, val);
+        updateStatus();
+      }
+    }, 800);
+  });
+
+  // Clear masked value on focus
+  keyInput.addEventListener('focus', () => {
+    if (keyInput.value.startsWith('•')) keyInput.value = '';
+  });
+
+  // Restore mask on blur if saved
+  keyInput.addEventListener('blur', () => {
+    const saved = getKey(currentTab);
+    if (saved && !keyInput.value.trim()) keyInput.value = '••••••••••••••••';
+    updateStatus();
   });
 
   clearBtn.addEventListener('click', () => {
     localStorage.removeItem(`api_key_${currentTab}`);
     keyInput.value = '';
-    updateIndicator();
+    updateStatus();
   });
 
-  keyInput.addEventListener('focus', () => {
-    if (keyInput.value.startsWith('•')) keyInput.value = '';
-  });
-  keyInput.addEventListener('keydown', e => { if (e.key === 'Enter') saveBtn.click(); });
-
-  // Init
   switchTab('gemini');
 
   // File upload
@@ -337,12 +356,7 @@
   analyzeBtn.addEventListener('click', async () => {
     if (!currentBase64) return;
     const active = getActiveKey();
-    if (!active) {
-      keyInput.focus();
-      keyInput.style.borderColor = 'var(--gold)';
-      setTimeout(() => keyInput.style.borderColor = '', 1500);
-      return;
-    }
+    if (!active) { keyInput.focus(); return; }
 
     analyzeBtn.disabled = true;
     analyzeBtn.classList.add('loading');
@@ -380,6 +394,7 @@
       { key: 'lighting',    label: '光影' },
       { key: 'color',       label: '色彩' },
     ];
+
     const dimsHTML = dims.map(d => `
       <div class="dimension">
         <div class="dim-name">${d.label}</div>
@@ -394,14 +409,14 @@
 
     critiqueContainer.innerHTML = `
       <div class="critique-card" id="card-critique">
-        <div class="card-title">優缺點分析</div>
+        <div class="card-title">🎭 精神分裂分析報告</div>
         ${dimsHTML}
-        <div style="margin-top:1rem">
-          <div class="card-title" style="margin-bottom:0.6rem">問題</div>
+        <div style="margin-top:1.2rem">
+          <div class="card-title" style="margin-bottom:0.6rem">⚡ 問題</div>
           <ul class="item-list">${problemsHTML}</ul>
         </div>
         <div style="margin-top:1rem">
-          <div class="card-title" style="margin-bottom:0.6rem">建議</div>
+          <div class="card-title" style="margin-bottom:0.6rem">🔧 建議</div>
           <ul class="item-list">${suggestHTML}</ul>
         </div>
       </div>`;
@@ -414,7 +429,7 @@
 
     practiceContainer.innerHTML = `
       <div class="practice-card" id="card-practice">
-        <div class="card-title">建議練習方向</div>
+        <div class="card-title">📋 建議練習方向</div>
         ${practiceHTML}
       </div>`;
 
