@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>畫作診斷室</title>
+<title>JOE 畫作診斷室</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=DM+Mono:wght@400;500&display=swap');
 
@@ -186,7 +186,7 @@
 <body>
 
 <header>
-  <div class="logo">畫作<span>診斷室</span></div>
+  <div class="logo">JOE 畫作<span>診斷室</span></div>
 </header>
 
 <div class="key-bar">
@@ -204,7 +204,7 @@
 
 <main>
   <div class="upload-panel">
-    <div class="section-label">難度</div>
+    <div class="section-label">Type</div>
     <div class="diff-group">
       <button class="diff-btn easy"          id="diff-easy"   onclick="switchPersona('mama')">Easy</button>
       <button class="diff-btn normal active" id="diff-normal" onclick="switchPersona('passerby')">Normal</button>
@@ -390,7 +390,13 @@
       const res = await fetch(WORKER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'generate', apiKey: geminiKey, imagenPrompt: currentImagenPrompt })
+        body: JSON.stringify({
+          action: 'generate',
+          apiKey: geminiKey,
+          imagenPrompt: currentImagenPrompt,
+          originalImage: currentBase64,
+          originalMediaType: currentMediaType
+        })
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
