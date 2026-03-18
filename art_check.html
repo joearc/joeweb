@@ -133,17 +133,32 @@
 
   .dimension { display: grid; grid-template-columns: 3.2rem 1fr; gap: 0.3rem 0.75rem; margin-bottom: 0.9rem; }
   .dim-name { font-size: 0.68rem; font-weight: 700; color: var(--muted); padding-top: 0.4rem; font-family: 'DM Mono', monospace; }
-  .pro, .con { padding: 0.3rem 0.6rem; font-size: 0.86rem; line-height: 1.65; border-left: 3px solid; margin-bottom: 0.25rem; }
 
-  /* Easy = mama */
-  .easy .pro { background: #fef0f7; color: #880e4f; border-color: #e91e8c; }
-  .easy .con { background: #fff8e1; color: #7f4c00; border-color: #ffb300; }
-  /* Normal = passerby */
-  .normal .pro { background: #f4f6f7; color: #2e4053; border-color: #aab; }
-  .normal .con { background: #f4f6f7; color: #4a4a4a; border-color: #999; }
-  /* Hard = schizo */
-  .hard .pro { background: #fdf2f2; color: #7b241c; border-color: var(--accent); }
-  .hard .con { background: #f5eef8; color: #6c3483; border-color: #9b59b6; }
+  .pro, .con {
+    padding: 0.35rem 0.65rem 0.35rem 0.5rem;
+    font-size: 0.86rem; line-height: 1.65; margin-bottom: 0.25rem;
+    display: flex; gap: 0.4rem; align-items: flex-start;
+  }
+  .pro::before { content: '+'; font-family: 'DM Mono', monospace; font-weight: 700; font-size: 0.95rem; flex-shrink: 0; }
+  .con::before { content: '−'; font-family: 'DM Mono', monospace; font-weight: 700; font-size: 0.95rem; flex-shrink: 0; }
+
+  /* Easy = mama: green / amber */
+  .easy .pro { background: #e8f5e9; color: #1b5e20; }
+  .easy .pro::before { color: #2e7d32; }
+  .easy .con { background: #fff8e1; color: #7f4c00; }
+  .easy .con::before { color: #e65100; }
+
+  /* Normal = passerby: blue / rose */
+  .normal .pro { background: #e3f2fd; color: #0d3c61; }
+  .normal .pro::before { color: #1565c0; }
+  .normal .con { background: #fce4ec; color: #6a1428; }
+  .normal .con::before { color: #c62828; }
+
+  /* Hard = schizo: purple / deep orange */
+  .hard .pro { background: #f3e5f5; color: #4a148c; }
+  .hard .pro::before { color: #7b1fa2; }
+  .hard .con { background: #fbe9e7; color: #7b241c; }
+  .hard .con::before { color: #bf360c; }
 
   .item-list { list-style: none; }
   .item-list li { font-size: 0.87rem; line-height: 1.65; padding: 0.3rem 0; border-bottom: 1px solid var(--border); display: flex; gap: 0.6rem; }
@@ -178,7 +193,7 @@
 <body>
 
 <header>
-  <div class="logo">JOE畫作<span>診斷室</span></div>
+  <div class="logo">畫作<span>診斷室</span></div>
 </header>
 
 <div class="key-bar">
@@ -199,9 +214,9 @@
 
     <div class="section-label">type</div>
     <div class="diff-group">
-      <button class="diff-btn easy"   id="diff-easy"   onclick="switchPersona('mama')">玻璃心</button>
-      <button class="diff-btn normal active" id="diff-normal" onclick="switchPersona('passerby')">一般</button>
-      <button class="diff-btn hard"   id="diff-hard"   onclick="switchPersona('schizo')">鐵石心腸</button>
+      <button class="diff-btn easy"   id="diff-easy"   onclick="switchPersona('mama')">Easy</button>
+      <button class="diff-btn normal active" id="diff-normal" onclick="switchPersona('passerby')">Normal</button>
+      <button class="diff-btn hard"   id="diff-hard"   onclick="switchPersona('schizo')">Hard</button>
     </div>
 
     <div class="section-label">作品</div>
