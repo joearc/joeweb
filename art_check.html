@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>畫作診斷室</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --ink: #1a1410;
+    --paper: #f5f0e8;
+    --accent: #c0392b;
+    --gold: #b8860b;
+    --muted: #7a6f62;
+    --border: #d4c9b8;
+    --card: #faf7f2;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Serif TC', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  header {
+    border-bottom: 3px double var(--ink);
+    padding: 2rem 3rem 1.5rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+    position: relative;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    left: 0; right: 0;
+    height: 1px;
+    background: var(--ink);
+  }
+  .logo {
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .logo span { color: var(--accent); }
+  .tagline {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-left: 1px solid var(--border);
+    padding-left: 1.5rem;
+  }
+
+  /* Main layout */
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    align-items: start;
+  }
+
+  /* Upload panel */
+  .upload-panel {
+    position: sticky;
+    top: 2rem;
+  }
+
+  .upload-label {
+    display: block;
+    border: 2px dashed var(--border);
+    border-radius: 2px;
+    aspect-ratio: 4/3;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    background: var(--card);
+    transition: border-color 0.2s;
+  }
+  .upload-label:hover { border-color: var(--ink); }
+  .upload-label.has-image { border-style: solid; border-color: var(--ink); }
+
+  .upload-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    color: var(--muted);
+    transition: opacity 0.2s;
+  }
+  .upload-label.has-image .upload-placeholder { opacity: 0; }
+
+  .upload-icon {
+    width: 48px; height: 48px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+  }
+  .upload-hint {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1.8;
+  }
+
+  #preview-img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    display: none;
+    padding: 0.5rem;
+  }
+  .upload-label.has-image #preview-img { display: block; }
+
+  #file-input { display: none; }
+
+  .analyze-btn {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.9rem;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .analyze-btn:hover { background: var(--accent); }
+  .analyze-btn:disabled { background: var(--muted); cursor: not-allowed; }
+
+  .btn-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  /* Spinner */
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  .analyze-btn.loading .spinner { display: block; }
+  .analyze-btn.loading .btn-text::after { content: '分析中…'; }
+  .analyze-btn:not(.loading) .btn-text::after { content: '開始診斷'; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Results panel */
+  .results-panel { min-height: 200px; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+
+  /* Critique card */
+  .critique-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--ink);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.4s, transform 0.4s;
+  }
+  .critique-card.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  .card-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    font-family: 'DM Mono', monospace;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Dimension rows */
+  .dimension {
+    display: grid;
+    grid-template-columns: 3.5rem 1fr;
+    gap: 0.25rem 0.75rem;
+    margin-bottom: 0.9rem;
+    align-items: start;
+  }
+  .dim-name {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    padding-top: 0.15rem;
+    font-family: 'DM Mono', monospace;
+  }
+  .dim-content { font-size: 0.88rem; line-height: 1.65; }
+  .pro { color: #2d6a4f; }
+  .pro::before { content: '＋ '; font-weight: 700; opacity: 0.7; }
+  .con { color: var(--accent); margin-top: 0.2rem; }
+  .con::before { content: '－ '; font-weight: 700; opacity: 0.7; }
+
+  /* Issues & suggestions list */
+  .item-list { list-style: none; }
+  .item-list li {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    padding: 0.35rem 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+  }
+  .item-list li:last-child { border-bottom: none; }
+  .item-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    min-width: 1.2rem;
+    padding-top: 0.15rem;
+  }
+
+  /* Practice card */
+  .practice-card {
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.4s 0.15s, transform 0.4s 0.15s;
+  }
+  .practice-card.visible { opacity: 1; transform: none; }
+  .practice-card .card-title { color: var(--gold); }
+  .practice-card .card-title::after { background: rgba(255,255,255,0.15); }
+
+  .practice-item {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-size: 0.9rem;
+    line-height: 1.55;
+    align-items: flex-start;
+  }
+  .practice-item:last-child { border-bottom: none; }
+  .practice-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--gold);
+    min-width: 1.5rem;
+    padding-top: 0.15rem;
+  }
+
+  /* Empty state */
+  .empty-state {
+    border: 1px dashed var(--border);
+    padding: 3rem 2rem;
+    text-align: center;
+    color: var(--muted);
+  }
+  .empty-state p {
+    font-size: 0.85rem;
+    line-height: 2;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  /* Error */
+  .error-msg {
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.25rem;
+    font-size: 0.85rem;
+    color: var(--accent);
+    background: #fff5f5;
+    margin-bottom: 1rem;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+  .free-badge {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0.2rem 0.6rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+  }
+
+  @media (max-width: 680px) {
+    main { grid-template-columns: 1fr; gap: 2rem; }
+    .upload-panel { position: static; }
+    header { padding: 1.5rem; flex-wrap: wrap; gap: 0.5rem; }
+    .tagline { border-left: none; padding-left: 0; }
+    footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">畫作<span>診斷室</span></div>
+  <div class="tagline">Art Critique </div>
+</header>
+
+<main>
+  <!-- Left: Upload -->
+  <div class="upload-panel">
+    <div class="section-label">上傳作品</div>
+    <label class="upload-label" id="upload-label" for="file-input">
+      <div class="upload-placeholder">
+        <div class="upload-icon">＋</div>
+        <div class="upload-hint">
+          點擊或拖曳圖片<br>
+          JPG · PNG · WEBP
+        </div>
+      </div>
+      <img id="preview-img" alt="預覽">
+    </label>
+    <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/gif">
+    <button class="analyze-btn" id="analyze-btn" disabled>
+      <div class="btn-inner">
+        <div class="spinner"></div>
+        <span class="btn-text"></span>
+      </div>
+    </button>
+  </div>
+
+  <!-- Right: Results -->
+  <div class="results-panel" id="results-panel">
+    <div class="section-label">診斷結果</div>
+    <div class="empty-state" id="empty-state">
+      <p>上傳作品後<br>AI 將直接給出<br>優缺點 × 練習方向</p>
+    </div>
+    <div id="error-container"></div>
+    <div id="critique-container"></div>
+    <div id="practice-container"></div>
+  </div>
+</main>
+
+<footer>
+  <span>畫作診斷室 · Powered by JOEART</span>
+  <span class="free-badge">FREE PLAN</span>
+</footer>
+
+<script>
+const fileInput = document.getElementById('file-input');
+const uploadLabel = document.getElementById('upload-label');
+const previewImg = document.getElementById('preview-img');
+const analyzeBtn = document.getElementById('analyze-btn');
+const emptyState = document.getElementById('empty-state');
+const errorContainer = document.getElementById('error-container');
+const critiqueContainer = document.getElementById('critique-container');
+const practiceContainer = document.getElementById('practice-container');
+
+let currentBase64 = null;
+let currentMediaType = null;
+
+// Drag & drop
+uploadLabel.addEventListener('dragover', e => { e.preventDefault(); uploadLabel.style.borderColor = 'var(--ink)'; });
+uploadLabel.addEventListener('dragleave', () => { uploadLabel.style.borderColor = ''; });
+uploadLabel.addEventListener('drop', e => {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if (file) handleFile(file);
+});
+
+fileInput.addEventListener('change', () => {
+  if (fileInput.files[0]) handleFile(fileInput.files[0]);
+});
+
+function handleFile(file) {
+  const allowed = ['image/jpeg','image/png','image/webp','image/gif'];
+  if (!allowed.includes(file.type)) return;
+
+  currentMediaType = file.type;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const dataURL = e.target.result;
+    currentBase64 = dataURL.split(',')[1];
+    previewImg.src = dataURL;
+    uploadLabel.classList.add('has-image');
+    analyzeBtn.disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+
+analyzeBtn.addEventListener('click', async () => {
+  if (!currentBase64) return;
+  
+  analyzeBtn.disabled = true;
+  analyzeBtn.classList.add('loading');
+  emptyState.style.display = 'none';
+  errorContainer.innerHTML = '';
+  critiqueContainer.innerHTML = '';
+  practiceContainer.innerHTML = '';
+
+  const systemPrompt = `你是一位犀利、直接的視覺藝術講師。分析學生畫作時：
+- 禁止客套、禁止過度解釋、禁止廢話
+- 總字數控制在200字以內
+- 必須嚴格按照以下JSON格式回覆，不要有任何其他文字：
+
+{
+  "critique": {
+    "composition": { "pro": "一句話優點", "con": "一句話缺點" },
+    "lighting": { "pro": "一句話優點", "con": "一句話缺點" },
+    "color": { "pro": "一句話優點", "con": "一句話缺點" },
+    "problems": ["問題1（極短）", "問題2（極短）", "問題3（極短）"],
+    "suggestions": ["可操作建議1", "可操作建議2", "可操作建議3"]
+  },
+  "practice": [
+    "練習方向1（具體課題）",
+    "練習方向2（具體課題）",
+    "練習方向3（具體課題）"
+  ]
+}`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{
+          role: 'user',
+          content: [
+            {
+              type: 'image',
+              source: { type: 'base64', media_type: currentMediaType, data: currentBase64 }
+            },
+            { type: 'text', text: '請分析這幅畫作，嚴格按照JSON格式回覆。' }
+          ]
+        }]
+      })
+    });
+
+    const data = await response.json();
+    
+    if (data.error) throw new Error(data.error.message);
+
+    const raw = data.content.find(b => b.type === 'text')?.text || '';
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('無法解析回覆格式');
+    
+    const result = JSON.parse(jsonMatch[0]);
+    renderResults(result);
+
+  } catch (err) {
+    errorContainer.innerHTML = `<div class="error-msg">分析失敗：${err.message}</div>`;
+    emptyState.style.display = '';
+  } finally {
+    analyzeBtn.disabled = false;
+    analyzeBtn.classList.remove('loading');
+  }
+});
+
+function renderResults(result) {
+  const c = result.critique;
+
+  const dims = [
+    { key: 'composition', label: '構圖' },
+    { key: 'lighting', label: '光影' },
+    { key: 'color', label: '色彩' },
+  ];
+
+  const dimsHTML = dims.map(d => `
+    <div class="dimension">
+      <div class="dim-name">${d.label}</div>
+      <div class="dim-content">
+        <div class="pro">${c[d.key].pro}</div>
+        <div class="con">${c[d.key].con}</div>
+      </div>
+    </div>
+  `).join('');
+
+  const problemsHTML = c.problems.map((p, i) => `
+    <li><span class="item-num">0${i+1}</span><span>${p}</span></li>
+  `).join('');
+
+  const suggestHTML = c.suggestions.map((s, i) => `
+    <li><span class="item-num">0${i+1}</span><span>${s}</span></li>
+  `).join('');
+
+  critiqueContainer.innerHTML = `
+    <div class="critique-card" id="card-critique">
+      <div class="card-title">優缺點分析</div>
+      ${dimsHTML}
+      <div style="margin-top:1rem">
+        <div class="card-title" style="margin-bottom:0.6rem">問題</div>
+        <ul class="item-list">${problemsHTML}</ul>
+      </div>
+      <div style="margin-top:1rem">
+        <div class="card-title" style="margin-bottom:0.6rem">建議</div>
+        <ul class="item-list">${suggestHTML}</ul>
+      </div>
+    </div>
+  `;
+
+  const practiceHTML = result.practice.map((p, i) => `
+    <div class="practice-item">
+      <span class="practice-num">0${i+1}</span>
+      <span>${p}</span>
+    </div>
+  `).join('');
+
+  practiceContainer.innerHTML = `
+    <div class="practice-card" id="card-practice">
+      <div class="card-title">建議練習方向</div>
+      ${practiceHTML}
+    </div>
+  `;
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.getElementById('card-critique')?.classList.add('visible');
+      document.getElementById('card-practice')?.classList.add('visible');
+    });
+  });
+}
+</script>
+
+</body>
+</html>
