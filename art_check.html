@@ -187,8 +187,8 @@
 <div class="key-bar">
   <span class="key-bar-label">API Key</span>
   <div class="api-tabs">
-    <button class="api-tab active" id="tab-gemini" onclick="switchTab('gemini')">Gemini</button>
-    <button class="api-tab" id="tab-claude" onclick="switchTab('claude')">Claude</button>
+    <button class="api-tab" id="tab-gemini" onclick="switchTab('gemini')">Gemini</button>
+    <button class="api-tab active" id="tab-claude" onclick="switchTab('claude')">Claude</button>
   </div>
   <div class="key-input-wrap">
     <input class="key-input" type="password" id="key-input" placeholder="AIzaSy...">
@@ -246,7 +246,7 @@
   const WORKER_URL = 'https://restless-mountain-037e.joearcx.workers.dev';
   const PLACEHOLDERS = { gemini: 'AIzaSy...', claude: 'sk-ant-...' };
 
-  let currentTab = 'gemini';
+  let currentTab = 'claude';
   let currentPersona = 'passerby';
   let currentDiff = 'normal';
   let autoSaveTimer = null;
@@ -269,7 +269,7 @@
   function getKey(t) { return localStorage.getItem(`api_key_${t}`) || ''; }
   function getActiveKey() {
     const g = getKey('gemini'), c = getKey('claude');
-    return g ? { key: g } : c ? { key: c } : null;
+    return c ? { key: c } : g ? { key: g } : null;
   }
 
   function updateStatus() {
@@ -314,7 +314,7 @@
     keyInput.value = ''; updateStatus();
   });
 
-  switchTab('gemini');
+  switchTab('claude');
 
   uploadLabel.addEventListener('dragover', e => e.preventDefault());
   uploadLabel.addEventListener('drop', e => { e.preventDefault(); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
