@@ -15,9 +15,6 @@
     --muted: #7a6f62;
     --border: #d4c9b8;
     --card: #faf7f2;
-    --green: #2d6a4f;
-    --praise: #1a5276;
-    --venom: #7b241c;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,79 +22,68 @@
 
   header {
     border-bottom: 3px double var(--ink);
-    padding: 1.5rem 2rem;
-    position: relative;
+    padding: 1.5rem 2rem; position: relative;
   }
   header::after { content: ''; position: absolute; bottom: 3px; left: 0; right: 0; height: 1px; background: var(--ink); }
   .logo { font-size: 1.8rem; font-weight: 900; letter-spacing: -0.02em; }
   .logo span { color: var(--accent); }
-  .tagline { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.3rem; }
 
-  /* API Key Bar */
+  /* Key Bar */
   .key-bar {
-    background: var(--ink);
-    padding: 0.9rem 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
+    background: var(--ink); padding: 0.85rem 2rem;
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
   }
-  .key-bar-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.63rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--gold);
-    white-space: nowrap;
-  }
-
-  .api-tabs { display: flex; flex-shrink: 0; }
+  .key-bar-label { font-family: 'DM Mono', monospace; font-size: 0.63rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); white-space: nowrap; }
+  .api-tabs { display: flex; }
   .api-tab {
-    padding: 0.35rem 0.85rem;
-    font-family: 'DM Mono', monospace; font-size: 0.63rem;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    cursor: pointer; border: 1px solid rgba(255,255,255,0.15);
-    color: rgba(255,255,255,0.4); background: none; transition: all 0.15s;
+    padding: 0.35rem 0.85rem; font-family: 'DM Mono', monospace; font-size: 0.63rem;
+    letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.4); background: none; transition: all 0.15s;
   }
   .api-tab:first-child { border-right: none; }
   .api-tab.active { background: var(--gold); color: var(--ink); border-color: var(--gold); font-weight: 500; }
-
-  .key-input-wrap { flex: 1; min-width: 200px; }
+  .key-input-wrap { flex: 1; min-width: 180px; }
   .key-input {
-    width: 100%;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
-    color: #fff;
-    padding: 0.45rem 0.85rem;
-    font-family: 'DM Mono', monospace; font-size: 0.78rem;
-    letter-spacing: 0.04em; outline: none; transition: border-color 0.15s;
+    width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    color: #fff; padding: 0.45rem 0.85rem; font-family: 'DM Mono', monospace;
+    font-size: 0.78rem; outline: none; transition: border-color 0.15s;
   }
   .key-input:focus { border-color: var(--gold); }
   .key-input::placeholder { color: rgba(255,255,255,0.22); font-size: 0.7rem; }
-
   .key-clear-btn {
-    background: none; color: rgba(255,255,255,0.3);
-    border: 1px solid rgba(255,255,255,0.12);
-    padding: 0.45rem 0.8rem; font-family: 'DM Mono', monospace;
-    font-size: 0.63rem; letter-spacing: 0.1em; text-transform: uppercase;
-    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    background: none; color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.12);
+    padding: 0.45rem 0.75rem; font-family: 'DM Mono', monospace; font-size: 0.63rem;
+    letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s;
   }
   .key-clear-btn:hover { color: var(--accent); border-color: var(--accent); }
-
-  .key-status {
-    font-family: 'DM Mono', monospace; font-size: 0.62rem; white-space: nowrap;
-    min-width: 4rem; text-align: right;
-  }
+  .key-status { font-family: 'DM Mono', monospace; font-size: 0.62rem; }
   .key-status.ok { color: #52b788; }
   .key-status.empty { color: rgba(255,255,255,0.25); }
 
   /* Main */
   main { max-width: 960px; margin: 0 auto; padding: 2.5rem 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: start; }
   .upload-panel { position: sticky; top: 2rem; }
-  .section-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+  .section-label { font-family: 'DM Mono', monospace; font-size: 0.63rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.85rem; }
 
+  /* Difficulty selector */
+  .diff-group { display: flex; gap: 0; margin-bottom: 1rem; width: 100%; }
+  .diff-btn {
+    flex: 1; padding: 0.6rem 0; text-align: center;
+    font-family: 'DM Mono', monospace; font-size: 0.72rem; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    border: 1px solid var(--border); background: var(--card);
+    cursor: pointer; transition: all 0.15s; color: var(--muted);
+  }
+  .diff-btn:not(:last-child) { border-right: none; }
+  .diff-btn:hover { border-color: var(--ink); color: var(--ink); }
+  .diff-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .diff-btn.easy.active   { background: #1a5276; border-color: #1a5276; }
+  .diff-btn.normal.active { background: #4a4a4a; border-color: #4a4a4a; }
+  .diff-btn.hard.active   { background: var(--accent); border-color: var(--accent); }
+
+  /* Upload */
   .upload-label {
-    display: block; border: 2px dashed var(--border); border-radius: 2px;
+    display: block; border: 2px dashed var(--border);
     aspect-ratio: 4/3; cursor: pointer; overflow: hidden; position: relative;
     background: var(--card); transition: border-color 0.2s;
   }
@@ -105,106 +91,94 @@
   .upload-label.has-image { border-style: solid; border-color: var(--ink); }
   .upload-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; color: var(--muted); transition: opacity 0.2s; }
   .upload-label.has-image .upload-placeholder { opacity: 0; }
-  .upload-icon { width: 48px; height: 48px; border: 2px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
-  .upload-hint { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; text-align: center; line-height: 1.8; }
+  .upload-icon { width: 44px; height: 44px; border: 2px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+  .upload-hint { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; text-align: center; line-height: 1.8; }
   #preview-img { width: 100%; height: 100%; object-fit: contain; display: none; padding: 0.5rem; }
   .upload-label.has-image #preview-img { display: block; }
   #file-input { display: none; }
 
   .analyze-btn {
-    width: 100%; margin-top: 1rem; padding: 0.9rem;
+    width: 100%; margin-top: 0.85rem; padding: 0.85rem;
     background: var(--ink); color: var(--paper); border: none;
-    font-family: 'Noto Serif TC', serif; font-size: 0.9rem; font-weight: 700;
-    letter-spacing: 0.1em; cursor: pointer; transition: background 0.15s;
+    font-family: 'DM Mono', monospace; font-size: 0.78rem; font-weight: 500;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    cursor: pointer; transition: background 0.15s;
   }
   .analyze-btn:hover:not(:disabled) { background: var(--accent); }
   .analyze-btn:disabled { background: var(--muted); cursor: not-allowed; }
   .btn-inner { display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
-  .spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+  .spinner { width: 13px; height: 13px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
   .analyze-btn.loading .spinner { display: block; }
-  .analyze-btn.loading .btn-text::after { content: '分析中…'; }
-  .analyze-btn:not(.loading) .btn-text::after { content: '分析'; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   /* Results */
   .results-panel { min-height: 200px; }
 
   .critique-card {
-    background: var(--card); border: 1px solid var(--border); border-top: 3px solid var(--ink);
-    padding: 1.5rem; margin-bottom: 1.5rem;
-    opacity: 0; transform: translateY(12px); transition: opacity 0.4s, transform 0.4s;
+    border: 1px solid var(--border); border-top: 3px solid var(--ink);
+    padding: 1.5rem; margin-bottom: 1.5rem; background: var(--card);
+    opacity: 0; transform: translateY(10px); transition: opacity 0.35s, transform 0.35s;
   }
   .critique-card.visible { opacity: 1; transform: none; }
+  .critique-card.easy   { border-top-color: #1a5276; }
+  .critique-card.normal { border-top-color: #555; }
+  .critique-card.hard   { border-top-color: var(--accent); }
 
   .card-title {
-    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-    margin-bottom: 1rem; font-family: 'DM Mono', monospace;
-    display: flex; align-items: center; gap: 0.5rem; color: var(--ink);
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 1rem; font-family: 'DM Mono', monospace; color: var(--muted);
+    display: flex; align-items: center; gap: 0.5rem;
   }
   .card-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-  .dimension { display: grid; grid-template-columns: 3.5rem 1fr; gap: 0.3rem 0.75rem; margin-bottom: 1rem; align-items: start; }
-  .dim-name { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; color: var(--muted); padding-top: 0.15rem; font-family: 'DM Mono', monospace; }
-  .dim-content { font-size: 0.88rem; line-height: 1.7; }
+  .dimension { display: grid; grid-template-columns: 3.2rem 1fr; gap: 0.3rem 0.75rem; margin-bottom: 0.9rem; }
+  .dim-name { font-size: 0.68rem; font-weight: 700; color: var(--muted); padding-top: 0.4rem; font-family: 'DM Mono', monospace; }
+  .pro, .con { padding: 0.3rem 0.6rem; font-size: 0.86rem; line-height: 1.65; border-left: 3px solid; margin-bottom: 0.25rem; }
 
-  .pro {
-    color: var(--praise);
-    background: #eaf0f6;
-    padding: 0.3rem 0.6rem;
-    border-left: 3px solid var(--praise);
-    margin-bottom: 0.3rem;
-    font-size: 0.85rem;
-    line-height: 1.6;
-  }
-  .pro::before { content: '✦ 讚 '; font-weight: 700; font-size: 0.7rem; opacity: 0.6; }
-
-  .con {
-    color: var(--venom);
-    background: #fdf2f2;
-    padding: 0.3rem 0.6rem;
-    border-left: 3px solid var(--venom);
-    font-size: 0.85rem;
-    line-height: 1.6;
-  }
-  .con::before { content: '✦ 毒 '; font-weight: 700; font-size: 0.7rem; opacity: 0.6; }
+  /* Easy = mama */
+  .easy .pro { background: #fef0f7; color: #880e4f; border-color: #e91e8c; }
+  .easy .con { background: #fff8e1; color: #7f4c00; border-color: #ffb300; }
+  /* Normal = passerby */
+  .normal .pro { background: #f4f6f7; color: #2e4053; border-color: #aab; }
+  .normal .con { background: #f4f6f7; color: #4a4a4a; border-color: #999; }
+  /* Hard = schizo */
+  .hard .pro { background: #fdf2f2; color: #7b241c; border-color: var(--accent); }
+  .hard .con { background: #f5eef8; color: #6c3483; border-color: #9b59b6; }
 
   .item-list { list-style: none; }
-  .item-list li { font-size: 0.88rem; line-height: 1.6; padding: 0.35rem 0; border-bottom: 1px solid var(--border); display: flex; gap: 0.6rem; align-items: flex-start; }
+  .item-list li { font-size: 0.87rem; line-height: 1.65; padding: 0.3rem 0; border-bottom: 1px solid var(--border); display: flex; gap: 0.6rem; }
   .item-list li:last-child { border-bottom: none; }
-  .item-num { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--muted); min-width: 1.2rem; padding-top: 0.15rem; }
+  .item-num { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); min-width: 1.2rem; padding-top: 0.15rem; }
 
   .practice-card {
     background: var(--ink); color: var(--paper); padding: 1.5rem; margin-bottom: 1.5rem;
-    opacity: 0; transform: translateY(12px); transition: opacity 0.4s 0.15s, transform 0.4s 0.15s;
+    opacity: 0; transform: translateY(10px); transition: opacity 0.35s 0.1s, transform 0.35s 0.1s;
   }
   .practice-card.visible { opacity: 1; transform: none; }
   .practice-card .card-title { color: var(--gold); }
   .practice-card .card-title::after { background: rgba(255,255,255,0.15); }
-  .practice-item { display: flex; gap: 0.75rem; padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; line-height: 1.55; align-items: flex-start; }
+  .practice-item { display: flex; gap: 0.75rem; padding: 0.55rem 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.88rem; line-height: 1.55; }
   .practice-item:last-child { border-bottom: none; }
-  .practice-num { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--gold); min-width: 1.5rem; padding-top: 0.15rem; }
+  .practice-num { font-family: 'DM Mono', monospace; font-size: 0.63rem; color: var(--gold); min-width: 1.5rem; padding-top: 0.15rem; }
 
   .empty-state { border: 1px dashed var(--border); padding: 3rem 2rem; text-align: center; color: var(--muted); }
-  .empty-state p { font-size: 0.85rem; line-height: 2.2; font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
-  .empty-emoji { font-size: 2rem; margin-bottom: 0.5rem; }
+  .empty-state p { font-size: 0.82rem; line-height: 2.2; font-family: 'DM Mono', monospace; }
 
   .error-msg { border-left: 3px solid var(--accent); padding: 1rem 1.25rem; font-size: 0.85rem; color: var(--accent); background: #fff5f5; margin-bottom: 1rem; line-height: 1.6; }
 
-  footer { border-top: 1px solid var(--border); padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; }
+  footer { border-top: 1px solid var(--border); padding: 1.2rem 2rem; display: flex; justify-content: space-between; font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--muted); letter-spacing: 0.08em; }
 
   @media (max-width: 680px) {
     main { grid-template-columns: 1fr; gap: 2rem; }
     .upload-panel { position: static; }
-    .key-bar { gap: 0.75rem; }
-    footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    footer { flex-direction: column; gap: 0.4rem; text-align: center; }
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">畫作<span>診斷室</span></div>
-  <div class="tagline">不專業藝術分析 · Gemini · Claude</div>
+  <div class="logo">JOE畫作<span>診斷室</span></div>
 </header>
 
 <div class="key-bar">
@@ -222,28 +196,37 @@
 
 <main>
   <div class="upload-panel">
-    <div class="section-label">上傳作品</div>
+
+    <div class="section-label">type</div>
+    <div class="diff-group">
+      <button class="diff-btn easy"   id="diff-easy"   onclick="switchPersona('mama')">玻璃心</button>
+      <button class="diff-btn normal active" id="diff-normal" onclick="switchPersona('passerby')">一般</button>
+      <button class="diff-btn hard"   id="diff-hard"   onclick="switchPersona('schizo')">鐵石心腸</button>
+    </div>
+
+    <div class="section-label">作品</div>
     <label class="upload-label" id="upload-label" for="file-input">
       <div class="upload-placeholder">
         <div class="upload-icon">＋</div>
-        <div class="upload-hint">點擊或拖曳圖片<br>JPG · PNG · WEBP</div>
+        <div class="upload-hint">點擊或拖曳<br>JPG · PNG · WEBP</div>
       </div>
-      <img id="preview-img" alt="預覽">
+      <img id="preview-img" alt="">
     </label>
     <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/gif">
+
     <button class="analyze-btn" id="analyze-btn" disabled>
       <div class="btn-inner">
         <div class="spinner"></div>
-        <span class="btn-text"></span>
+        <span id="btn-text">分析</span>
       </div>
     </button>
+
   </div>
 
   <div class="results-panel">
-    <div class="section-label">診斷結果</div>
+    <div class="section-label">結果</div>
     <div class="empty-state" id="empty-state">
-      <div class="empty-emoji">🎭</div>
-      <p>分析</p>
+      <p>上傳作品<br>開始分析</p>
     </div>
     <div id="error-container"></div>
     <div id="critique-container"></div>
@@ -252,21 +235,26 @@
 </main>
 
 <footer>
-  <span>畫作診斷室 · </span>
+  <span>畫作診斷室</span>
   <span>Gemini 2.5 Pro · Claude Sonnet</span>
 </footer>
 
 <script>
   const WORKER_URL = 'https://restless-mountain-037e.joearcx.workers.dev';
+  const PLACEHOLDERS = { gemini: 'AIzaSy...', claude: 'sk-ant-...' };
 
-  const PLACEHOLDERS = { gemini: 'AIzaSy...（Gemini API Key）', claude: 'sk-ant-...（Anthropic API Key）' };
   let currentTab = 'gemini';
+  let currentPersona = 'passerby';
+  let currentDiff = 'normal';
   let autoSaveTimer = null;
+  let currentBase64 = null;
+  let currentMediaType = null;
 
   const keyInput    = document.getElementById('key-input');
   const clearBtn    = document.getElementById('clear-btn');
   const keyStatus   = document.getElementById('key-status');
   const analyzeBtn  = document.getElementById('analyze-btn');
+  const btnText     = document.getElementById('btn-text');
   const emptyState  = document.getElementById('empty-state');
   const errorContainer    = document.getElementById('error-container');
   const critiqueContainer = document.getElementById('critique-container');
@@ -275,21 +263,16 @@
   const uploadLabel = document.getElementById('upload-label');
   const previewImg  = document.getElementById('preview-img');
 
-  let currentBase64 = null;
-  let currentMediaType = null;
-
-  function getKey(type) { return localStorage.getItem(`api_key_${type}`) || ''; }
+  function getKey(t) { return localStorage.getItem(`api_key_${t}`) || ''; }
   function getActiveKey() {
     const g = getKey('gemini'), c = getKey('claude');
-    if (g) return { key: g, type: 'gemini' };
-    if (c) return { key: c, type: 'claude' };
-    return null;
+    return g ? { key: g } : c ? { key: c } : null;
   }
 
   function updateStatus() {
-    const saved = getKey(currentTab);
-    keyStatus.textContent = saved ? '✓ 已儲存' : '未設定';
-    keyStatus.className = `key-status ${saved ? 'ok' : 'empty'}`;
+    const s = getKey(currentTab);
+    keyStatus.textContent = s ? '✓ 已儲存' : '未設定';
+    keyStatus.className = `key-status ${s ? 'ok' : 'empty'}`;
   }
 
   function switchTab(tab) {
@@ -297,45 +280,39 @@
     document.getElementById('tab-gemini').classList.toggle('active', tab === 'gemini');
     document.getElementById('tab-claude').classList.toggle('active', tab === 'claude');
     keyInput.placeholder = PLACEHOLDERS[tab];
-    const saved = getKey(tab);
-    keyInput.value = saved ? '••••••••••••••••' : '';
+    keyInput.value = getKey(tab) ? '••••••••••••••••' : '';
     updateStatus();
   }
 
-  // Auto-save on input (debounced 800ms)
+  function switchPersona(p) {
+    const diffMap = { mama: 'easy', passerby: 'normal', schizo: 'hard' };
+    currentPersona = p;
+    currentDiff = diffMap[p];
+    ['easy','normal','hard'].forEach(d => {
+      document.getElementById(`diff-${d}`).classList.toggle('active', d === currentDiff);
+    });
+  }
+
   keyInput.addEventListener('input', () => {
     clearTimeout(autoSaveTimer);
     const val = keyInput.value.trim();
     if (!val || val.startsWith('•')) return;
     autoSaveTimer = setTimeout(() => {
-      if (val.length > 10) {
-        localStorage.setItem(`api_key_${currentTab}`, val);
-        updateStatus();
-      }
+      if (val.length > 10) { localStorage.setItem(`api_key_${currentTab}`, val); updateStatus(); }
     }, 800);
   });
-
-  // Clear masked value on focus
-  keyInput.addEventListener('focus', () => {
-    if (keyInput.value.startsWith('•')) keyInput.value = '';
-  });
-
-  // Restore mask on blur if saved
+  keyInput.addEventListener('focus', () => { if (keyInput.value.startsWith('•')) keyInput.value = ''; });
   keyInput.addEventListener('blur', () => {
-    const saved = getKey(currentTab);
-    if (saved && !keyInput.value.trim()) keyInput.value = '••••••••••••••••';
+    if (getKey(currentTab) && !keyInput.value.trim()) keyInput.value = '••••••••••••••••';
     updateStatus();
   });
-
   clearBtn.addEventListener('click', () => {
     localStorage.removeItem(`api_key_${currentTab}`);
-    keyInput.value = '';
-    updateStatus();
+    keyInput.value = ''; updateStatus();
   });
 
   switchTab('gemini');
 
-  // File upload
   uploadLabel.addEventListener('dragover', e => e.preventDefault());
   uploadLabel.addEventListener('drop', e => { e.preventDefault(); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
   fileInput.addEventListener('change', () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); });
@@ -360,30 +337,32 @@
 
     analyzeBtn.disabled = true;
     analyzeBtn.classList.add('loading');
+    btnText.textContent = '分析中';
     emptyState.style.display = 'none';
     errorContainer.innerHTML = '';
     critiqueContainer.innerHTML = '';
     practiceContainer.innerHTML = '';
 
     try {
-      const response = await fetch(WORKER_URL, {
+      const res = await fetch(WORKER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64: currentBase64, mediaType: currentMediaType, apiKey: active.key })
+        body: JSON.stringify({ imageBase64: currentBase64, mediaType: currentMediaType, apiKey: active.key, persona: currentPersona })
       });
-      const data = await response.json();
+      const data = await res.json();
       if (data.error) throw new Error(data.error);
 
       const raw = data.text.replace(/```json|```/g, '').trim();
-      const jsonMatch = raw.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) throw new Error('無法解析回覆格式');
-      renderResults(JSON.parse(jsonMatch[0]));
+      const m = raw.match(/\{[\s\S]*\}/);
+      if (!m) throw new Error('無法解析回覆格式');
+      renderResults(JSON.parse(m[0]));
     } catch (err) {
-      errorContainer.innerHTML = `<div class="error-msg">分析失敗：${err.message}</div>`;
+      errorContainer.innerHTML = `<div class="error-msg">${err.message}</div>`;
       emptyState.style.display = '';
     } finally {
       analyzeBtn.disabled = false;
       analyzeBtn.classList.remove('loading');
+      btnText.textContent = '分析';
     }
   });
 
@@ -404,33 +383,30 @@
         </div>
       </div>`).join('');
 
-    const problemsHTML = c.problems.map((p,i) => `<li><span class="item-num">0${i+1}</span><span>${p}</span></li>`).join('');
-    const suggestHTML  = c.suggestions.map((s,i) => `<li><span class="item-num">0${i+1}</span><span>${s}</span></li>`).join('');
+    const probHTML = c.problems.map((p,i) => `<li><span class="item-num">0${i+1}</span><span>${p}</span></li>`).join('');
+    const suggHTML = c.suggestions.map((s,i) => `<li><span class="item-num">0${i+1}</span><span>${s}</span></li>`).join('');
 
     critiqueContainer.innerHTML = `
-      <div class="critique-card" id="card-critique">
-        <div class="card-title">🎭 精神分裂分析報告</div>
+      <div class="critique-card ${currentDiff}" id="card-critique">
+        <div class="card-title">分析</div>
         ${dimsHTML}
-        <div style="margin-top:1.2rem">
-          <div class="card-title" style="margin-bottom:0.6rem">⚡ 問題</div>
-          <ul class="item-list">${problemsHTML}</ul>
-        </div>
         <div style="margin-top:1rem">
-          <div class="card-title" style="margin-bottom:0.6rem">🔧 建議</div>
-          <ul class="item-list">${suggestHTML}</ul>
+          <div class="card-title" style="margin-bottom:0.5rem">問題</div>
+          <ul class="item-list">${probHTML}</ul>
+        </div>
+        <div style="margin-top:0.9rem">
+          <div class="card-title" style="margin-bottom:0.5rem">建議</div>
+          <ul class="item-list">${suggHTML}</ul>
         </div>
       </div>`;
 
-    const practiceHTML = result.practice.map((p,i) => `
-      <div class="practice-item">
-        <span class="practice-num">0${i+1}</span>
-        <span>${p}</span>
-      </div>`).join('');
+    const pracHTML = result.practice.map((p,i) => `
+      <div class="practice-item"><span class="practice-num">0${i+1}</span><span>${p}</span></div>`).join('');
 
     practiceContainer.innerHTML = `
       <div class="practice-card" id="card-practice">
-        <div class="card-title">📋 建議練習方向</div>
-        ${practiceHTML}
+        <div class="card-title">練習方向</div>
+        ${pracHTML}
       </div>`;
 
     requestAnimationFrame(() => requestAnimationFrame(() => {
