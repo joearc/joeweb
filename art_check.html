@@ -108,6 +108,7 @@
   .type-tab.easy.active   { background: #1a5276; border-color: #1a5276; color: #fff; }
   .type-tab.normal.active { background: #4a4a4a; border-color: #4a4a4a; color: #fff; }
   .type-tab.hard.active   { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .type-tab.artist.active { background: #6c3483; border-color: #6c3483; color: #fff; }
 
   .critique-card {
     border: 1px solid var(--border); border-top: 3px solid var(--ink);
@@ -229,9 +230,10 @@
     <div id="results-body" style="display:none">
       <!-- Type tabs -->
       <div class="type-tabs">
-        <button class="type-tab easy"   onclick="switchType('easy')">玻璃心</button>
-        <button class="type-tab normal active" onclick="switchType('normal')">正常人</button>
-        <button class="type-tab hard"   onclick="switchType('hard')">心臟很大顆</button>
+        <button class="type-tab easy"   onclick="switchType('easy')">我玻璃心</button>
+        <button class="type-tab normal active" onclick="switchType('normal')">我正常人</button>
+        <button class="type-tab hard"   onclick="switchType('hard')">我心臟很大顆</button>
+        <button class="type-tab artist" onclick="switchType('artist')">碰碰運氣</button>
       </div>
       <div id="critique-container"></div>
       <div id="practice-container"></div>
