@@ -386,22 +386,35 @@
   });
 
   function renderCritique(r, type) {
+    if (!r || !r.critique) {
+      critiqueContainer.innerHTML = '<div class="error-msg">此語氣回傳格式異常，請重新分析。</div>';
+      practiceContainer.innerHTML = '';
+      return;
+    }
+
     const dims = [
       { key: 'composition', label: '構圖' },
       { key: 'lighting',    label: '光影' },
       { key: 'color',       label: '色彩' },
     ];
-    const dimsHTML = dims.map(d => `
+    const dimsHTML = dims.map(d => {
+      const item = r.critique[d.key] || {};
+      return `
       <div class="dimension">
         <div class="dim-name">${d.label}</div>
         <div class="dim-content">
-          <div class="pro">${r.critique[d.key].pro}</div>
-          <div class="con">${r.critique[d.key].con}</div>
+          <div class="pro">${item.pro || ''}</div>
+          <div class="con">${item.con || ''}</div>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
 
-    const probHTML = r.critique.problems.map((p,i) => `<li><span class="item-num">0${i+1}</span><span>${p}</span></li>`).join('');
-    const suggHTML = r.critique.suggestions.map((s,i) => `<li><span class="item-num">0${i+1}</span><span>${s}</span></li>`).join('');
+    const problems = Array.isArray(r.critique.problems) ? r.critique.problems : [];
+    const suggestions = Array.isArray(r.critique.suggestions) ? r.critique.suggestions : [];
+    const practice = Array.isArray(r.practice) ? r.practice : [];
+
+    const probHTML = problems.map((p,i) => `<li><span class="item-num">0${i+1}</span><span>${p}</span></li>`).join('');
+    const suggHTML = suggestions.map((s,i) => `<li><span class="item-num">0${i+1}</span><span>${s}</span></li>`).join('');
 
     critiqueContainer.innerHTML = `
       <div class="critique-card ${type} visible">
@@ -417,7 +430,7 @@
         </div>
       </div>`;
 
-    const pracHTML = r.practice.map((p,i) => `
+    const pracHTML = practice.map((p,i) => `
       <div class="practice-item"><span class="practice-num">0${i+1}</span><span>${p}</span></div>`).join('');
 
     practiceContainer.innerHTML = `
